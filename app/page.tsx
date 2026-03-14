@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   Search,
   ArrowLeft,
@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { supabase, type HouseSchema, type Room } from "@/lib/supabase";
 import { getTemplatesForRoom, type JobTemplate } from "@/lib/templates";
+import type { CalculationResult } from "@/lib/calculator";
 import PlanScreen from "./PlanScreen";
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -65,13 +66,15 @@ function area(l: number, w: number) {
   return ((l / 100) * (w / 100)).toFixed(2);
 }
 
-// ── House request form (client-side only) ────────────────────────────────────
+// ── House request form ────────────────────────────────────────────────────────
 
 function HouseRequestForm() {
   const [builder, setBuilder] = useState("");
   const [houseType, setHouseType] = useState("");
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   if (submitted) {
     return (
@@ -81,11 +84,33 @@ function HouseRequestForm() {
     );
   }
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    if (!builder.trim() || !houseType.trim() || !email.trim()) {
+      setError("Please fill in all fields.");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      const { error: dbError } = await supabase
+        .from("house_requests")
+        .insert({ builder_name: builder.trim(), house_type: houseType.trim(), email: email.trim() });
+      if (dbError) throw dbError;
+      setSubmitted(true);
+    } catch {
+      setError("Something went wrong — please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <form
-      onSubmit={(e) => { e.preventDefault(); setSubmitted(true); }}
-      className="space-y-3"
-    >
+    <form onSubmit={handleSubmit} className="space-y-3">
       <div>
         <label className="block text-xs font-medium text-[#475569] mb-1">Builder name</label>
         <input
@@ -93,7 +118,6 @@ function HouseRequestForm() {
           value={builder}
           onChange={(e) => setBuilder(e.target.value)}
           placeholder="e.g. Barratt Homes"
-          required
           className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent"
         />
       </div>
@@ -104,7 +128,6 @@ function HouseRequestForm() {
           value={houseType}
           onChange={(e) => setHouseType(e.target.value)}
           placeholder="e.g. The Marford, 3 bed semi-detached"
-          required
           className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent"
         />
       </div>
@@ -115,26 +138,29 @@ function HouseRequestForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
-          required
           className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent"
         />
       </div>
+      {error && <p className="text-xs text-red-600">{error}</p>}
       <button
         type="submit"
-        className="w-full bg-[#10B981] text-white text-sm font-medium py-2.5 px-4 rounded-lg hover:bg-[#059669] transition-colors"
+        disabled={isSubmitting}
+        className="w-full bg-[#10B981] text-white text-sm font-medium py-2.5 px-4 rounded-lg hover:bg-[#059669] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Request this house
+        {isSubmitting ? "Sending..." : "Request this house"}
       </button>
     </form>
   );
 }
 
-// ── Project request form (client-side only) ──────────────────────────────────
+// ── Project request form ──────────────────────────────────────────────────────
 
 function ProjectRequestForm() {
   const [description, setDescription] = useState("");
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   if (submitted) {
     return (
@@ -144,11 +170,33 @@ function ProjectRequestForm() {
     );
   }
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    if (!description.trim() || !email.trim()) {
+      setError("Please fill in all fields.");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      const { error: dbError } = await supabase
+        .from("project_requests")
+        .insert({ project_description: description.trim(), email: email.trim() });
+      if (dbError) throw dbError;
+      setSubmitted(true);
+    } catch {
+      setError("Something went wrong — please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <form
-      onSubmit={(e) => { e.preventDefault(); setSubmitted(true); }}
-      className="space-y-3"
-    >
+    <form onSubmit={handleSubmit} className="space-y-3">
       <div>
         <label className="block text-xs font-medium text-[#475569] mb-1">Project description</label>
         <input
@@ -156,7 +204,6 @@ function ProjectRequestForm() {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="e.g. Lay engineered wood flooring in a bedroom"
-          required
           className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent"
         />
       </div>
@@ -167,27 +214,76 @@ function ProjectRequestForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
-          required
           className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent"
         />
       </div>
+      {error && <p className="text-xs text-red-600">{error}</p>}
       <button
         type="submit"
-        className="w-full bg-[#10B981] text-white text-sm font-medium py-2.5 px-4 rounded-lg hover:bg-[#059669] transition-colors"
+        disabled={isSubmitting}
+        className="w-full bg-[#10B981] text-white text-sm font-medium py-2.5 px-4 rounded-lg hover:bg-[#059669] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Request this project
+        {isSubmitting ? "Sending..." : "Request this project"}
       </button>
     </form>
   );
 }
 
+// ── Floor plan block ──────────────────────────────────────────────────────────
+
+function FloorPlanBlock({ url }: { url: string }) {
+  const [imgFailed, setImgFailed] = useState(false);
+
+  if (imgFailed) {
+    return (
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-2 px-4 py-3 border border-[#E2E8F0] rounded-xl text-sm text-[#087F8C] hover:bg-[#F1F5F9] transition-colors"
+      >
+        <FileImage size={16} />
+        View floor plan
+      </a>
+    );
+  }
+
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block border border-[#E2E8F0] rounded-xl overflow-hidden hover:border-[#087F8C] transition-colors"
+    >
+      <img
+        src={url}
+        alt="Floor plan"
+        className="w-full object-contain max-h-80"
+        onError={() => setImgFailed(true)}
+      />
+      <div className="flex items-center gap-1.5 px-3 py-2 border-t border-[#E2E8F0] text-xs text-[#087F8C]">
+        <FileImage size={12} />
+        View full size
+      </div>
+    </a>
+  );
+}
+
 // ── Main page ────────────────────────────────────────────────────────────────
+
+type SessionUpdateData = {
+  answers: Record<string, unknown>;
+  changedDefaults: Record<string, number>;
+  doorways: Array<{ other_side: string; bar_type: string }>;
+  result: CalculationResult;
+};
 
 export default function Page() {
   const [appState, setAppState] = useState<AppState>("search");
   const [selectedSchema, setSelectedSchema] = useState<HouseSchema | null>(null);
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [selectedJob, setSelectedJob] = useState<JobTemplate | null>(null);
+  const sessionIdRef = useRef<string | null>(null);
 
   // Search state
   const [query, setQuery] = useState("");
@@ -224,6 +320,21 @@ export default function Page() {
 
         if (error) throw error;
 
+        // Fetch exterior photos + floor plans for matched schemas (RPC doesn't return them)
+        const ids = (data || []).map((r: any) => r.id as string);
+        let photoMap: Record<string, { exterior_photo_url: string | null; floor_plan_url: string | null }> = {};
+        if (ids.length > 0) {
+          const { data: photos } = await supabase
+            .from("house_schemas")
+            .select("id, exterior_photo_url, floor_plan_url")
+            .in("id", ids);
+          if (photos) {
+            for (const p of photos as Array<{ id: string; exterior_photo_url: string | null; floor_plan_url: string | null }>) {
+              photoMap[p.id] = { exterior_photo_url: p.exterior_photo_url, floor_plan_url: p.floor_plan_url };
+            }
+          }
+        }
+
         // RPC returns builder_name as a flat field — reshape to match HouseSchema
         const normalised = (data || []).map((r: any) => ({
           id: r.id,
@@ -231,8 +342,8 @@ export default function Page() {
           model_name: r.model_name,
           bedrooms: r.bedrooms,
           property_type: r.property_type,
-          exterior_photo_url: r.exterior_photo_url ?? null,
-          floor_plan_url: r.floor_plan_url ?? null,
+          exterior_photo_url: photoMap[r.id]?.exterior_photo_url ?? null,
+          floor_plan_url: photoMap[r.id]?.floor_plan_url ?? null,
           builders: r.builder_name ? { id: r.builder_id, name: r.builder_name } : undefined,
         })) as HouseSchema[];
         setResults(normalised);
@@ -279,12 +390,57 @@ export default function Page() {
     setAppState("jobs");
   };
 
+  const handleSessionUpdate = useCallback(async (data: SessionUpdateData) => {
+    if (!selectedSchema || !selectedRoom || !selectedJob) return;
+    const calculatedOutput = Object.fromEntries(
+      data.result.materials.map((m) => [m.quantity_key, m.quantity])
+    );
+    if (!sessionIdRef.current) {
+      try {
+        const { data: row, error } = await supabase
+          .from("handyroo_sessions")
+          .insert({
+            house_schema_id: selectedSchema.id,
+            room_id: selectedRoom.id,
+            job_template_id: selectedJob.job_id,
+            user_inputs: data.answers,
+            configured_defaults: data.changedDefaults,
+            doorways: data.doorways,
+            calculated_output: calculatedOutput,
+          })
+          .select("id")
+          .single();
+        if (error) { console.error("Session insert error:", error); return; }
+        sessionIdRef.current = (row as { id: string }).id;
+      } catch (e) {
+        console.error("Session insert error:", e);
+      }
+    } else {
+      try {
+        const { error } = await supabase
+          .from("handyroo_sessions")
+          .update({
+            user_inputs: data.answers,
+            configured_defaults: data.changedDefaults,
+            doorways: data.doorways,
+            calculated_output: calculatedOutput,
+          })
+          .eq("id", sessionIdRef.current);
+        if (error) console.error("Session update error:", error);
+      } catch (e) {
+        console.error("Session update error:", e);
+      }
+    }
+  }, [selectedSchema, selectedRoom, selectedJob]);
+
   const selectJob = (job: JobTemplate) => {
+    sessionIdRef.current = null;
     setSelectedJob(job);
     setAppState("plan");
   };
 
   const goBackToSearch = () => {
+    sessionIdRef.current = null;
     setAppState("search");
     setSelectedSchema(null);
     setSelectedRoom(null);
@@ -293,12 +449,14 @@ export default function Page() {
   };
 
   const goBackToRooms = () => {
+    sessionIdRef.current = null;
     setAppState("rooms");
     setSelectedRoom(null);
     setSelectedJob(null);
   };
 
   const goBackToJobs = () => {
+    sessionIdRef.current = null;
     setAppState("jobs");
     setSelectedJob(null);
   };
@@ -360,54 +518,53 @@ export default function Page() {
             )}
 
             {!isSearching && results.length > 0 && (
-              <div className="border border-[#E2E8F0] rounded-lg divide-y divide-[#F1F5F9] overflow-hidden">
+              <div className="space-y-3">
                 {results.map((schema) => (
                   <button
                     key={schema.id}
                     onClick={() => selectSchema(schema)}
-                    className="w-full px-4 py-3 text-left hover:bg-[#F8FAFC] transition-colors flex items-center gap-3"
+                    className="w-full border border-[#E2E8F0] rounded-xl overflow-hidden text-left hover:border-[#10B981] transition-colors group"
                   >
-                    {/* Thumbnail */}
+                    {/* Exterior photo */}
                     {schema.exterior_photo_url ? (
                       <img
                         src={schema.exterior_photo_url}
                         alt={schema.model_name}
-                        width={64}
-                        height={64}
-                        className="w-16 h-16 rounded-md object-cover flex-shrink-0"
+                        className="w-full h-48 object-cover"
                       />
                     ) : (
-                      <div className="w-16 h-16 rounded-md bg-[#F1F5F9] flex items-center justify-center flex-shrink-0">
-                        <Home size={24} className="text-[#CBD5E1]" />
+                      <div className="w-full h-32 bg-[#F1F5F9] flex items-center justify-center">
+                        <Home size={36} className="text-[#CBD5E1]" />
                       </div>
                     )}
 
-                    {/* Text */}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-[#0F172A]">
-                        {schema.model_name}
-                        {schema.builders && (
-                          <span className="text-[#64748B] font-normal"> by {schema.builders.name}</span>
+                    {/* Info */}
+                    <div className="px-4 py-3 flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-[#0F172A] group-hover:text-[#10B981] transition-colors">
+                          {schema.model_name}
+                          {schema.builders && (
+                            <span className="text-[#64748B] font-normal"> by {schema.builders.name}</span>
+                          )}
+                        </p>
+                        <p className="text-xs text-[#94A3B8] mt-0.5">
+                          {schema.bedrooms} bed {schema.property_type}
+                        </p>
+                        {schema.floor_plan_url && (
+                          <a
+                            href={schema.floor_plan_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="inline-flex items-center gap-1 text-xs text-[#087F8C] mt-1.5 hover:underline"
+                          >
+                            <FileImage size={11} />
+                            View floor plan
+                          </a>
                         )}
-                      </p>
-                      <p className="text-xs text-[#94A3B8] mt-0.5">
-                        {schema.bedrooms} bed {schema.property_type}
-                      </p>
-                      {schema.floor_plan_url && (
-                        <a
-                          href={schema.floor_plan_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          className="inline-flex items-center gap-1 text-xs text-[#087F8C] mt-1 hover:underline"
-                        >
-                          <FileImage size={11} />
-                          View floor plan
-                        </a>
-                      )}
+                      </div>
+                      <ArrowLeft size={14} className="text-[#CBD5E1] rotate-180 flex-shrink-0 mt-0.5" />
                     </div>
-
-                    <ArrowLeft size={14} className="text-[#CBD5E1] rotate-180 flex-shrink-0" />
                   </button>
                 ))}
               </div>
@@ -458,6 +615,14 @@ export default function Page() {
                 {selectedSchema.bedrooms} bed {selectedSchema.property_type}
               </p>
             </div>
+
+            {/* Floor plan */}
+            {selectedSchema.floor_plan_url && (
+              <div>
+                <p className="text-xs font-semibold text-[#94A3B8] uppercase tracking-widest mb-2">Floor plan</p>
+                <FloorPlanBlock url={selectedSchema.floor_plan_url} />
+              </div>
+            )}
 
             <p className="text-sm text-[#475569]">
               Select the room you want to work on.
@@ -626,6 +791,7 @@ export default function Page() {
             room={selectedRoom}
             job={selectedJob}
             onBack={goBackToJobs}
+            onSessionUpdate={handleSessionUpdate}
           />
         )}
       </div>

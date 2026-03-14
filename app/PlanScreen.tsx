@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import {
   ArrowLeft,
   ChevronDown,
@@ -13,6 +13,7 @@ import {
   ExternalLink,
   Minus,
   Plus,
+  FileImage,
 } from "lucide-react";
 import type { HouseSchema, Room } from "@/lib/supabase";
 import type { JobTemplate } from "@/lib/templates";
@@ -96,16 +97,25 @@ function Collapsible({ title, icon, defaultOpen = false, children }: {
 
 // ── Main component ────────────────────────────────────────────────────────────
 
+type SessionUpdateData = {
+  answers: Record<string, unknown>;
+  changedDefaults: Record<string, number>;
+  doorways: Array<{ other_side: string; bar_type: string }>;
+  result: ReturnType<typeof calculateMaterials>;
+};
+
 export default function PlanScreen({
   schema,
   room,
   job,
   onBack,
+  onSessionUpdate,
 }: {
   schema: HouseSchema;
   room: Room;
   job: JobTemplate;
   onBack: () => void;
+  onSessionUpdate?: (data: SessionUpdateData) => void;
 }) {
   // ── Answers state (pre-seeded with template defaults) ─────────────────────
   const initialAnswers = useMemo(() => {
@@ -200,6 +210,26 @@ export default function PlanScreen({
 
   const { calculations: calcs } = result;
 
+  // ── Session logging ────────────────────────────────────────────────────────
+  const changedDefaults = useMemo(() => {
+    return Object.fromEntries(
+      Object.entries(defaults).filter(([k, v]) => v !== initialDefaults[k])
+    ) as Record<string, number>;
+  }, [defaults, initialDefaults]);
+
+  // Use a ref so the effect doesn't depend on onSessionUpdate identity
+  const onSessionUpdateRef = useRef(onSessionUpdate);
+  useEffect(() => { onSessionUpdateRef.current = onSessionUpdate; });
+
+  useEffect(() => {
+    onSessionUpdateRef.current?.({
+      answers: allAnswers,
+      changedDefaults,
+      doorways: syncedDoorways,
+      result,
+    });
+  }, [result]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const isLaminate = job.job_id === "laminate_flooring";
   const isPaint = job.job_id === "paint_walls";
   const hasDoorwayQ = !!(job.doorway_questions as { enabled?: boolean })?.enabled;
@@ -231,11 +261,24 @@ export default function PlanScreen({
       {/* Compact header */}
       <div>
         <h1 className="text-xl font-semibold text-[#0F172A]">{job.job_name}</h1>
-        <p className="text-sm text-[#64748B] mt-0.5">
-          {room.room_name} &middot; {fmt(room.length_cm)}m &times; {fmt(room.width_cm)}m &middot;{" "}
-          {schema.model_name}
-          {schema.builders ? ` by ${schema.builders.name}` : ""}
-        </p>
+        <div className="flex items-start justify-between gap-3 mt-0.5">
+          <p className="text-sm text-[#64748B]">
+            {room.room_name} &middot; {fmt(room.length_cm)}m &times; {fmt(room.width_cm)}m &middot;{" "}
+            {schema.model_name}
+            {schema.builders ? ` by ${schema.builders.name}` : ""}
+          </p>
+          {schema.floor_plan_url && (
+            <a
+              href={schema.floor_plan_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-xs text-[#087F8C] hover:underline flex-shrink-0 mt-0.5"
+            >
+              <FileImage size={12} />
+              Floor plan
+            </a>
+          )}
+        </div>
       </div>
 
       {/* ── Questions ───────────────────────────────────────────────────────── */}
@@ -264,7 +307,20 @@ export default function PlanScreen({
         {/* Feature wall colour assignments */}
         {isPaint && featureWall && (
           <div>
-            <p className="text-sm font-medium text-[#0F172A] mb-2">Which wall is the feature wall?</p>
+            <div className="flex items-center justify-between gap-3 mb-2">
+              <p className="text-sm font-medium text-[#0F172A]">Which wall is the feature wall?</p>
+              {schema.floor_plan_url && (
+                <a
+                  href={schema.floor_plan_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs text-[#087F8C] hover:underline flex-shrink-0"
+                >
+                  <FileImage size={11} />
+                  Floor plan
+                </a>
+              )}
+            </div>
             <div className="flex flex-wrap gap-2">
               {wallLabels.map((label, i) => {
                 const assignment = wallAssignments[i] ?? "a";

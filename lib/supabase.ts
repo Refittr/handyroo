@@ -33,3 +33,32 @@ export interface Room {
   door_count: number | null
   window_count: number | null
 }
+
+export interface HouseRequest {
+  id?: string
+  builder_name: string
+  house_type: string
+  email: string
+  status?: string
+  created_at?: string
+}
+
+export interface ProjectRequest {
+  id?: string
+  project_description: string
+  email: string
+  status?: string
+  created_at?: string
+}
+
+export interface HandyrooSession {
+  id?: string
+  house_schema_id: string
+  room_id: string
+  job_template_id: string
+  user_inputs: Record<string, unknown>
+  configured_defaults: Record<string, number>
+  doorways: Array<{ other_side: string; bar_type: string }>
+  calculated_output: Record<string, number>
+  created_at?: string
+}
