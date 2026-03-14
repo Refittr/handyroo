@@ -272,7 +272,7 @@ export default function PlanScreen({
                 );
               })}
             </div>
-            <p className="text-xs text-[#94A3B8] mt-1.5">Teal = main colour, purple = feature colour</p>
+            <p className="text-xs text-[#94A3B8] mt-1.5">White/unselected = main colour, purple = feature colour</p>
           </div>
         )}
 
@@ -359,8 +359,8 @@ export default function PlanScreen({
           onClick={() => setShowDefaults(!showDefaults)}
           className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-[#F8FAFC] transition-colors"
         >
-          <span className="text-xs font-semibold text-[#94A3B8] uppercase tracking-wide">Adjust assumptions</span>
-          {showDefaults ? <ChevronUp size={14} className="text-[#94A3B8]" /> : <ChevronDown size={14} className="text-[#94A3B8]" />}
+          <span className="text-sm font-medium text-[#475569]">Adjust assumptions</span>
+          {showDefaults ? <ChevronUp size={14} className="text-[#64748B]" /> : <ChevronDown size={14} className="text-[#64748B]" />}
         </button>
         {showDefaults && (
           <div className="px-4 pb-4 space-y-4">
