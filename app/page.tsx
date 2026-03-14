@@ -1,4 +1,4 @@
-"use client";
+ï»¿"use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import {
@@ -665,7 +665,7 @@ export default function Page() {
                                   {room.room_name}
                                 </p>
                                 <p className="text-xs text-[#94A3B8] mt-0.5">
-                                  {fmt(room.length_cm)}m Ã- {fmt(room.width_cm)}m &middot; {area(room.length_cm, room.width_cm)} sqm
+                                  {fmt(room.length_cm)}m Ã— {fmt(room.width_cm)}m Â· {area(room.length_cm, room.width_cm)} sqm
                                 </p>
                               </div>
                               <ArrowLeft size={14} className="text-[#CBD5E1] rotate-180 flex-shrink-0" />
@@ -708,7 +708,7 @@ export default function Page() {
                   {selectedRoom.room_name}
                 </span>
                 <span className="text-xs text-[#94A3B8]">
-                  {fmt(selectedRoom.length_cm)}m Ã- {fmt(selectedRoom.width_cm)}m &middot; {area(selectedRoom.length_cm, selectedRoom.width_cm)} sqm
+                  {fmt(selectedRoom.length_cm)}m ï¿½- {fmt(selectedRoom.width_cm)}m &middot; {area(selectedRoom.length_cm, selectedRoom.width_cm)} sqm
                 </span>
                 <span className="text-xs text-[#CBD5E1]">&middot;</span>
                 <span className="text-xs text-[#94A3B8]">
@@ -799,4 +799,5 @@ export default function Page() {
     </div>
   );
 }
+
 
