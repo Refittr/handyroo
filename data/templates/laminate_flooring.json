@@ -28,7 +28,7 @@
     },
     {
       "id": "subfloor_type",
-      "question": "What's your subfloor? The floor underneath — concrete (ground floor usually) or wooden floorboards (upstairs usually).",
+      "question": "What's your subfloor? The floor underneath - concrete (ground floor usually) or wooden floorboards (upstairs usually).",
       "type": "choice",
       "options": ["concrete", "wooden"],
       "default": "wooden"
@@ -79,9 +79,9 @@
   ],
 
   "materials": [
-    { "name": "Laminate flooring", "quantity_key": "laminate_packs", "unit": "packs", "condition": null, "notes": "Check sqm per pack on the box — adjust the pack coverage setting if different" },
-    { "name": "Underlay", "quantity_key": "underlay_rolls", "unit": "rolls", "condition": "underlay_needed", "notes": "Foam underlay for laminate. NOT carpet underlay — different thing" },
-    { "name": "Damp proof membrane (DPM)", "quantity_key": "dpm_rolls", "unit": "rolls", "condition": "subfloor_concrete", "notes": "Only needed on concrete subfloors. Some underlay has DPM built in — check before buying separately" },
+    { "name": "Laminate flooring", "quantity_key": "laminate_packs", "unit": "packs", "condition": null, "notes": "Check sqm per pack on the box - adjust the pack coverage setting if different" },
+    { "name": "Underlay", "quantity_key": "underlay_rolls", "unit": "rolls", "condition": "underlay_needed", "notes": "Foam underlay for laminate. NOT carpet underlay - different thing" },
+    { "name": "Damp proof membrane (DPM)", "quantity_key": "dpm_rolls", "unit": "rolls", "condition": "subfloor_concrete", "notes": "Only needed on concrete subfloors. Some underlay has DPM built in - check before buying separately" },
     { "name": "Beading / Scotia", "quantity_key": "beading_lengths", "unit": "lengths (2.4m)", "condition": "beading_needed", "notes": "Match colour to your laminate. MDF is cheapest, solid wood looks better" },
     { "name": "Spacers", "quantity_key": "spacers", "unit": "pack", "condition": null, "notes": "Expansion gap spacers (8-10mm). One pack does the whole room" },
     { "name": "Underlay tape", "quantity_key": "underlay_tape", "unit": "roll", "condition": "underlay_needed", "notes": "For taping underlay seams. Some underlay is self-adhesive" },
@@ -109,41 +109,41 @@
   "steps": [
     "Clear the room completely. Everything out. If removing existing carpet or vinyl, pull it up now and bag it.",
     "Check the subfloor is clean, dry, and reasonably level. If there are dips bigger than 3mm over a metre, you'll need self-levelling compound (concrete) or to pack the floorboards (wood).",
-    "Acclimatise the laminate — leave unopened packs flat in the room for at least 48 hours.",
+    "Acclimatise the laminate - leave unopened packs flat in the room for at least 48 hours.",
     "Undercut door frames. Place a loose plank (with underlay if using) against the frame and saw along the top so the laminate slides underneath.",
     "Lay DPM if on concrete. Overlap sheets by at least 200mm and tape every join.",
-    "Lay underlay across the room. Butt edges together — don't overlap. Tape the seams.",
-    "Plan your first row. Start from the longest, straightest wall. Check if the last row will be less than half a plank wide — if so, cut the first row narrower to balance it out.",
+    "Lay underlay across the room. Butt edges together - don't overlap. Tape the seams.",
+    "Plan your first row. Start from the longest, straightest wall. Check if the last row will be less than half a plank wide - if so, cut the first row narrower to balance it out.",
     "Lay the first row, tongue side facing the wall. Place spacers between planks and wall (8-10mm gap). Cut the last plank to fit.",
     "Start the second row with the offcut from row one (minimum 300mm). Click the long edge in at an angle, press down to lock.",
     "Continue row by row. Use the tapping block and mallet to close gaps. Check every few rows that you're still parallel to the walls.",
-    "Fit the last row — measure, cut to width (remember the expansion gap), and use the pull bar to click in.",
+    "Fit the last row - measure, cut to width (remember the expansion gap), and use the pull bar to click in.",
     "Cut around pipes: drill a hole slightly larger than the pipe, cut a straight line to the edge, slide around the pipe, glue the cut piece back.",
     "Fit door bars at thresholds.",
     "Remove all spacers.",
     "Fit beading to the skirting board (not the floor) using a pin nailer or adhesive. Mitre corners at 45 degrees.",
-    "Rehang doors if needed — trim the bottom if the door won't clear the new floor."
+    "Rehang doors if needed - trim the bottom if the door won't clear the new floor."
   ],
 
   "pro_tips": [
     "Lay planks perpendicular to the main light source (usually the window). The light hides the joins.",
     "Buy 10% extra. You will make mistakes and you'll want spares for future repairs.",
-    "Never skip the expansion gap. Laminate expands and contracts — without the gap it buckles.",
+    "Never skip the expansion gap. Laminate expands and contracts - without the gap it buckles.",
     "Stagger your joints. Minimum 300mm offset between rows. Lined-up joints look terrible.",
     "Check door clearance before you start. Hold a plank plus underlay against the bottom of each door.",
-    "Don't tap the click edge directly — always use a tapping block. Direct hits damage the mechanism.",
+    "Don't tap the click edge directly - always use a tapping block. Direct hits damage the mechanism.",
     "L-shaped rooms: increase waste to 15%. More cuts = more waste."
   ],
 
   "caveats": [
-    "Check the sqm per pack on your chosen laminate. Pack sizes aren't universal — adjust the pack coverage setting to match.",
+    "Check the sqm per pack on your chosen laminate. Pack sizes aren't universal - adjust the pack coverage setting to match.",
     "L-shaped or irregular rooms need more waste allowance. Switch from 10% to 15%.",
     "Some underlay has built-in DPM. If yours does, you don't need separate DPM sheets even on concrete.",
     "Underfloor heating needs specific compatible underlay and laminate. Check product specs.",
-    "Very uneven subfloors need levelling first. This isn't in the materials list — it depends on your floor.",
-    "If you have a built-in wardrobe or section you're not covering, your actual area is less — you might need fewer packs.",
+    "Very uneven subfloors need levelling first. This isn't in the materials list - it depends on your floor.",
+    "If you have a built-in wardrobe or section you're not covering, your actual area is less - you might need fewer packs.",
     "If removing and refitting skirting boards instead of using beading, switch beading off. You may need longer nails for the raised floor level."
   ],
 
-  "refittr_message": "Coming in June — check Refittr for second-hand flooring guaranteed to fit your room."
+  "refittr_message": "Coming in June - check Refittr for second-hand flooring guaranteed to fit your room."
 }
