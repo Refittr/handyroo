@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { supabase, type HouseSchema, type Room } from "@/lib/supabase";
 import { getTemplatesForRoom, type JobTemplate } from "@/lib/templates";
+import PlanScreen from "./PlanScreen";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -586,61 +587,14 @@ export default function Page() {
           );
         })()}
 
-        {/* ── STATE 4: Plan placeholder ── */}
+        {/* ── STATE 4: Plan ── */}
         {appState === "plan" && selectedSchema && selectedRoom && selectedJob && (
-          <div className="space-y-6">
-            {/* Back */}
-            <button
-              onClick={goBackToJobs}
-              className="flex items-center gap-1.5 text-sm text-[#64748B] hover:text-[#0F172A] transition-colors"
-            >
-              <ArrowLeft size={14} />
-              Back to projects
-            </button>
-
-            {/* Summary */}
-            <div className="flex items-baseline gap-3 flex-wrap">
-              <span className="text-sm font-medium text-[#0F172A]">{selectedJob.job_name}</span>
-              <span className="text-xs text-[#CBD5E1]">&middot;</span>
-              <span className="text-xs text-[#94A3B8]">{selectedRoom.room_name}</span>
-              <span className="text-xs text-[#CBD5E1]">&middot;</span>
-              <span className="text-xs text-[#94A3B8]">
-                {fmt(selectedRoom.length_cm)}m × {fmt(selectedRoom.width_cm)}m
-              </span>
-            </div>
-
-            {/* Coming soon */}
-            <div className="border border-[#E2E8F0] rounded-lg p-5 bg-[#F8FAFC]">
-              <p className="text-sm font-medium text-[#475569] mb-1">Calculation engine coming soon!</p>
-              <p className="text-sm text-[#64748B] leading-relaxed">
-                Next up: answer a few questions about your job and we&apos;ll calculate an exact materials list from your room dimensions.
-              </p>
-            </div>
-
-            {/* Project request form */}
-            <div className="border border-[#E2E8F0] rounded-lg p-5">
-              <p className="text-sm font-medium text-[#475569] mb-1">Don&apos;t see your project?</p>
-              <p className="text-xs text-[#64748B] mb-4">
-                Tell us what job you want to do and we&apos;ll build a template for it.
-              </p>
-              <ProjectRequestForm />
-            </div>
-
-            {/* Refittr teaser */}
-            <div className="border border-[#E2E8F0] rounded-lg p-5 bg-[#F8FAFC]">
-              <p className="text-sm text-[#475569] leading-relaxed mb-3">
-                Imagine getting a materials list and then being matched with second-hand fixtures guaranteed to fit your room. That&apos;s what&apos;s coming.
-              </p>
-              <a
-                href="https://refittr.co.uk"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm font-medium text-[#10B981] hover:text-[#059669] transition-colors"
-              >
-                Check out Refittr &rarr;
-              </a>
-            </div>
-          </div>
+          <PlanScreen
+            schema={selectedSchema}
+            room={selectedRoom}
+            job={selectedJob}
+            onBack={goBackToJobs}
+          />
         )}
       </div>
 
