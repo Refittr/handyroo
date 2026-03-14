@@ -1,10 +1,20 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Sora, DM_Sans } from "next/font/google";
 import "./globals.css";
+import SiteNav from "./components/SiteNav";
+import SiteFooter from "./components/SiteFooter";
+import CrossLinkBanner from "./components/CrossLinkBanner";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const sora = Sora({
+  variable: "--font-sora",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -20,8 +30,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} font-sans antialiased bg-white text-slate-900`}>
-        {children}
+      <body className={`${sora.variable} ${dmSans.variable} font-sans antialiased bg-white text-[#475569] min-h-screen flex flex-col`}>
+        <SiteNav activeSite="handyroo" />
+        <main className="flex-1">
+          {children}
+        </main>
+        <CrossLinkBanner site="handyroo" />
+        <SiteFooter />
       </body>
     </html>
   );

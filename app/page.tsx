@@ -68,41 +68,41 @@ function HouseRequestForm() {
       className="space-y-3"
     >
       <div>
-        <label className="block text-xs font-medium text-slate-600 mb-1">Builder name</label>
+        <label className="block text-xs font-medium text-[#475569] mb-1">Builder name</label>
         <input
           type="text"
           value={builder}
           onChange={(e) => setBuilder(e.target.value)}
           placeholder="e.g. Barratt Homes"
           required
-          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#087F8C] focus:border-transparent"
+          className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent"
         />
       </div>
       <div>
-        <label className="block text-xs font-medium text-slate-600 mb-1">House type</label>
+        <label className="block text-xs font-medium text-[#475569] mb-1">House type</label>
         <input
           type="text"
           value={houseType}
           onChange={(e) => setHouseType(e.target.value)}
           placeholder="e.g. The Marford, 3 bed semi-detached"
           required
-          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#087F8C] focus:border-transparent"
+          className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent"
         />
       </div>
       <div>
-        <label className="block text-xs font-medium text-slate-600 mb-1">Your email</label>
+        <label className="block text-xs font-medium text-[#475569] mb-1">Your email</label>
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
           required
-          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#087F8C] focus:border-transparent"
+          className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent"
         />
       </div>
       <button
         type="submit"
-        className="w-full bg-[#087F8C] text-white text-sm font-medium py-2.5 px-4 rounded-lg hover:bg-[#076e79] transition-colors"
+        className="w-full bg-[#10B981] text-white text-sm font-medium py-2.5 px-4 rounded-lg hover:bg-[#059669] transition-colors"
       >
         Request this house
       </button>
@@ -131,30 +131,30 @@ function ProjectRequestForm() {
       className="space-y-3"
     >
       <div>
-        <label className="block text-xs font-medium text-slate-600 mb-1">Project description</label>
+        <label className="block text-xs font-medium text-[#475569] mb-1">Project description</label>
         <input
           type="text"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="e.g. Lay engineered wood flooring in a bedroom"
           required
-          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#087F8C] focus:border-transparent"
+          className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent"
         />
       </div>
       <div>
-        <label className="block text-xs font-medium text-slate-600 mb-1">Your email</label>
+        <label className="block text-xs font-medium text-[#475569] mb-1">Your email</label>
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
           required
-          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#087F8C] focus:border-transparent"
+          className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent"
         />
       </div>
       <button
         type="submit"
-        className="w-full bg-[#087F8C] text-white text-sm font-medium py-2.5 px-4 rounded-lg hover:bg-[#076e79] transition-colors"
+        className="w-full bg-[#10B981] text-white text-sm font-medium py-2.5 px-4 rounded-lg hover:bg-[#059669] transition-colors"
       >
         Request this project
       </button>
@@ -175,6 +175,9 @@ export default function Page() {
   const [isSearching, setIsSearching] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Search error state
+  const [searchError, setSearchError] = useState<string | null>(null);
+
   // Rooms state
   const [rooms, setRooms] = useState<Room[]>([]);
   const [isLoadingRooms, setIsLoadingRooms] = useState(false);
@@ -192,6 +195,7 @@ export default function Page() {
 
     debounceRef.current = setTimeout(async () => {
       setIsSearching(true);
+      setSearchError(null);
       try {
         const q = query.trim();
 
@@ -210,8 +214,9 @@ export default function Page() {
           builders: r.builder_name ? { id: r.builder_id, name: r.builder_name } : undefined,
         })) as HouseSchema[];
         setResults(normalised);
-      } catch {
+      } catch (err: any) {
         setResults([]);
+        setSearchError(err?.message ?? "Search failed");
       } finally {
         setIsSearching(false);
       }
@@ -275,16 +280,17 @@ export default function Page() {
     <div className="min-h-screen bg-white flex flex-col">
       <div className="max-w-[600px] mx-auto px-6 py-12 flex-1 w-full">
 
-        {/* Header */}
+        {/* Page header */}
         <header className="mb-12">
           <div className="flex items-baseline gap-2">
             <button
               onClick={goBackToSearch}
-              className="text-2xl font-semibold tracking-tight text-slate-900 hover:text-[#087F8C] transition-colors"
+              className="text-2xl font-bold tracking-tight text-[#0F172A] hover:text-[#10B981] transition-colors"
+              style={{ fontFamily: 'var(--font-sora)' }}
             >
-              Handyroo
+              HandyRoo
             </button>
-            <span className="text-sm text-slate-500">by Refittr</span>
+            <span className="text-sm text-[#64748B]">by Refittr</span>
           </div>
         </header>
 
@@ -292,67 +298,73 @@ export default function Page() {
         {appState === "search" && (
           <div className="space-y-8">
             <div>
-              <h1 className="text-2xl font-semibold text-slate-900 mb-2">
+              <h1 className="text-2xl font-semibold text-[#0F172A] mb-2">
                 What&apos;s your house type?
               </h1>
-              <p className="text-slate-500 text-sm">
+              <p className="text-[#64748B] text-sm">
                 We know the dimensions of thousands of UK homes.
               </p>
             </div>
 
             {/* Search input */}
             <div className="relative">
-              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
               <input
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search by house type or builder (e.g. The Alderney by Barratt)"
                 autoFocus
-                className="w-full pl-9 pr-4 py-3 border border-slate-200 rounded-lg text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#087F8C] focus:border-transparent"
+                className="w-full pl-9 pr-4 py-3 border border-[#E2E8F0] rounded-lg text-sm text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent"
               />
             </div>
 
             {/* Results */}
             {isSearching && (
-              <p className="text-sm text-slate-400">Searching...</p>
+              <p className="text-sm text-[#94A3B8]">Searching...</p>
             )}
 
             {!isSearching && results.length > 0 && (
-              <div className="border border-slate-200 rounded-lg divide-y divide-slate-100 overflow-hidden">
+              <div className="border border-[#E2E8F0] rounded-lg divide-y divide-[#F1F5F9] overflow-hidden">
                 {results.map((schema) => (
                   <button
                     key={schema.id}
                     onClick={() => selectSchema(schema)}
-                    className="w-full px-4 py-3 text-left hover:bg-slate-50 transition-colors flex items-center justify-between gap-4"
+                    className="w-full px-4 py-3 text-left hover:bg-[#F8FAFC] transition-colors flex items-center justify-between gap-4"
                   >
                     <div>
-                      <p className="text-sm font-medium text-slate-900">
+                      <p className="text-sm font-medium text-[#0F172A]">
                         {schema.model_name}
                         {schema.builders && (
-                          <span className="text-slate-500 font-normal"> by {schema.builders.name}</span>
+                          <span className="text-[#64748B] font-normal"> by {schema.builders.name}</span>
                         )}
                       </p>
-                      <p className="text-xs text-slate-400 mt-0.5">
+                      <p className="text-xs text-[#94A3B8] mt-0.5">
                         {schema.bedrooms} bed {schema.property_type}
                       </p>
                     </div>
-                    <ArrowLeft size={14} className="text-slate-300 rotate-180 flex-shrink-0" />
+                    <ArrowLeft size={14} className="text-[#CBD5E1] rotate-180 flex-shrink-0" />
                   </button>
                 ))}
               </div>
             )}
 
-            {!isSearching && query.trim() && results.length === 0 && (
-              <p className="text-sm text-slate-400">
+            {searchError && (
+              <p className="text-sm text-red-500">
+                Search error: {searchError}
+              </p>
+            )}
+
+            {!isSearching && !searchError && query.trim() && results.length === 0 && (
+              <p className="text-sm text-[#94A3B8]">
                 No results for &ldquo;{query}&rdquo;.
               </p>
             )}
 
             {/* Don't see your house */}
-            <div className="border border-slate-200 rounded-lg p-5">
-              <p className="text-sm font-medium text-slate-700 mb-1">Don&apos;t see your house?</p>
-              <p className="text-xs text-slate-500 mb-4">
+            <div className="border border-[#E2E8F0] rounded-lg p-5">
+              <p className="text-sm font-medium text-[#475569] mb-1">Don&apos;t see your house?</p>
+              <p className="text-xs text-[#64748B] mb-4">
                 We&apos;re building our database every day. Tell us yours and we&apos;ll prioritise getting it added.
               </p>
               <HouseRequestForm />
@@ -367,29 +379,29 @@ export default function Page() {
             <div>
               <button
                 onClick={goBackToSearch}
-                className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors mb-4"
+                className="flex items-center gap-1.5 text-sm text-[#64748B] hover:text-[#0F172A] transition-colors mb-4"
               >
                 <ArrowLeft size={14} />
                 Change house
               </button>
-              <h1 className="text-xl font-semibold text-slate-900">
+              <h1 className="text-xl font-semibold text-[#0F172A]">
                 {selectedSchema.model_name}
                 {selectedSchema.builders && (
-                  <span className="text-slate-500 font-normal"> by {selectedSchema.builders.name}</span>
+                  <span className="text-[#64748B] font-normal"> by {selectedSchema.builders.name}</span>
                 )}
               </h1>
-              <p className="text-sm text-slate-400 mt-1">
+              <p className="text-sm text-[#94A3B8] mt-1">
                 {selectedSchema.bedrooms} bed {selectedSchema.property_type}
               </p>
             </div>
 
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-[#475569]">
               Select the room you want to work on.
             </p>
 
             {/* Loading */}
             {isLoadingRooms && (
-              <p className="text-sm text-slate-400">Loading rooms...</p>
+              <p className="text-sm text-[#94A3B8]">Loading rooms...</p>
             )}
 
             {/* Error */}
@@ -406,7 +418,7 @@ export default function Page() {
                   .sort(([a], [b]) => Number(a) - Number(b))
                   .map(([floor, floorRooms]) => (
                     <div key={floor}>
-                      <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">
+                      <h2 className="text-xs font-semibold text-[#94A3B8] uppercase tracking-widest mb-3">
                         {FLOOR_LABELS[Number(floor)] ?? `Floor ${floor}`}
                       </h2>
                       <div className="space-y-2">
@@ -416,18 +428,18 @@ export default function Page() {
                             <button
                               key={room.id}
                               onClick={() => selectRoom(room)}
-                              className="w-full border border-slate-200 rounded-lg px-4 py-3.5 flex items-center gap-4 hover:border-[#087F8C] hover:bg-slate-50 transition-colors text-left group"
+                              className="w-full border border-[#E2E8F0] rounded-lg px-4 py-3.5 flex items-center gap-4 hover:border-[#10B981] hover:bg-[#F8FAFC] transition-colors text-left group"
                             >
-                              <Icon size={18} className="text-[#087F8C] flex-shrink-0" />
+                              <Icon size={18} className="text-[#10B981] flex-shrink-0" />
                               <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-slate-900 group-hover:text-[#087F8C] transition-colors">
+                                <p className="text-sm font-medium text-[#0F172A] group-hover:text-[#10B981] transition-colors">
                                   {room.room_name}
                                 </p>
-                                <p className="text-xs text-slate-400 mt-0.5">
+                                <p className="text-xs text-[#94A3B8] mt-0.5">
                                   {fmt(room.length_cm)}m × {fmt(room.width_cm)}m &middot; {area(room.length_cm, room.width_cm)} sqm
                                 </p>
                               </div>
-                              <ArrowLeft size={14} className="text-slate-300 rotate-180 flex-shrink-0" />
+                              <ArrowLeft size={14} className="text-[#CBD5E1] rotate-180 flex-shrink-0" />
                             </button>
                           );
                         })}
@@ -438,8 +450,8 @@ export default function Page() {
             )}
 
             {!isLoadingRooms && !roomsError && rooms.length === 0 && (
-              <div className="border border-slate-200 rounded-lg p-5 text-center">
-                <p className="text-sm text-slate-500">
+              <div className="border border-[#E2E8F0] rounded-lg p-5 text-center">
+                <p className="text-sm text-[#64748B]">
                   No room dimensions available for this house type yet.
                 </p>
               </div>
@@ -453,32 +465,32 @@ export default function Page() {
             {/* Back */}
             <button
               onClick={goBackToRooms}
-              className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors"
+              className="flex items-center gap-1.5 text-sm text-[#64748B] hover:text-[#0F172A] transition-colors"
             >
               <ArrowLeft size={14} />
               Back to rooms
             </button>
 
             {/* Selected house + room */}
-            <div className="border border-slate-200 rounded-lg p-5">
-              <p className="text-xs text-slate-400 uppercase tracking-wide font-semibold mb-3">Your selection</p>
+            <div className="border border-[#E2E8F0] rounded-lg p-5">
+              <p className="text-xs text-[#94A3B8] uppercase tracking-wide font-semibold mb-3">Your selection</p>
               <div className="space-y-2">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-xs text-slate-400 w-12 flex-shrink-0">House</span>
-                  <span className="text-sm text-slate-900">
+                  <span className="text-xs text-[#94A3B8] w-12 flex-shrink-0">House</span>
+                  <span className="text-sm text-[#0F172A]">
                     {selectedSchema.model_name}
                     {selectedSchema.builders && (
-                      <span className="text-slate-500"> by {selectedSchema.builders.name}</span>
+                      <span className="text-[#64748B]"> by {selectedSchema.builders.name}</span>
                     )}
                   </span>
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-xs text-slate-400 w-12 flex-shrink-0">Room</span>
-                  <span className="text-sm text-slate-900">{selectedRoom.room_name}</span>
+                  <span className="text-xs text-[#94A3B8] w-12 flex-shrink-0">Room</span>
+                  <span className="text-sm text-[#0F172A]">{selectedRoom.room_name}</span>
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-xs text-slate-400 w-12 flex-shrink-0">Size</span>
-                  <span className="text-sm text-slate-700">
+                  <span className="text-xs text-[#94A3B8] w-12 flex-shrink-0">Size</span>
+                  <span className="text-sm text-[#475569]">
                     {fmt(selectedRoom.length_cm)}m × {fmt(selectedRoom.width_cm)}m &middot; {area(selectedRoom.length_cm, selectedRoom.width_cm)} sqm
                   </span>
                 </div>
@@ -486,32 +498,32 @@ export default function Page() {
             </div>
 
             {/* Coming soon */}
-            <div className="border border-slate-200 rounded-lg p-5 bg-slate-50">
-              <p className="text-sm font-medium text-slate-700 mb-1">Job selection coming soon</p>
-              <p className="text-sm text-slate-500 leading-relaxed">
+            <div className="border border-[#E2E8F0] rounded-lg p-5 bg-[#F8FAFC]">
+              <p className="text-sm font-medium text-[#475569] mb-1">Job selection coming soon</p>
+              <p className="text-sm text-[#64748B] leading-relaxed">
                 We&apos;re building this right now. Once it&apos;s live, you&apos;ll tell us what you want to do and we&apos;ll give you an exact materials list from your actual room dimensions.
               </p>
             </div>
 
             {/* Project request form */}
-            <div className="border border-slate-200 rounded-lg p-5">
-              <p className="text-sm font-medium text-slate-700 mb-1">Don&apos;t see your project?</p>
-              <p className="text-xs text-slate-500 mb-4">
+            <div className="border border-[#E2E8F0] rounded-lg p-5">
+              <p className="text-sm font-medium text-[#475569] mb-1">Don&apos;t see your project?</p>
+              <p className="text-xs text-[#64748B] mb-4">
                 Tell us what job you want to do and we&apos;ll build a template for it.
               </p>
               <ProjectRequestForm />
             </div>
 
             {/* Refittr teaser */}
-            <div className="border border-slate-200 rounded-lg p-5 bg-slate-50">
-              <p className="text-sm text-slate-600 leading-relaxed mb-3">
+            <div className="border border-[#E2E8F0] rounded-lg p-5 bg-[#F8FAFC]">
+              <p className="text-sm text-[#475569] leading-relaxed mb-3">
                 Imagine getting a materials list and then being matched with second-hand fixtures guaranteed to fit your room. That&apos;s what&apos;s coming.
               </p>
               <a
                 href="https://refittr.co.uk"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm font-medium text-[#087F8C] hover:underline"
+                className="text-sm font-medium text-[#10B981] hover:text-[#059669] transition-colors"
               >
                 Check out Refittr &rarr;
               </a>
@@ -520,23 +532,6 @@ export default function Page() {
         )}
       </div>
 
-      {/* Footer */}
-      <footer className="max-w-[600px] mx-auto px-6 pb-10 w-full">
-        <div className="border-t border-slate-100 pt-6">
-          <p className="text-sm text-slate-400">
-            Handyroo by{" "}
-            <a
-              href="https://refittr.co.uk"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-slate-500 hover:text-slate-700 underline underline-offset-2"
-            >
-              Refittr
-            </a>{" "}
-            - Built in Liverpool.
-          </p>
-        </div>
-      </footer>
     </div>
   );
 }
