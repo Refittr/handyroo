@@ -1,0 +1,174 @@
+{
+  "job_id": "paint_walls",
+  "job_name": "Paint a Room (Walls)",
+  "category": "decorating",
+  "difficulty": "beginner",
+  "estimated_time": "1-2 days including drying time. Actual painting 3-5 hours for an average bedroom.",
+  "icon": "Paintbrush",
+  "applicable_room_types": ["living", "kitchen/dining", "bedroom", "bathroom", "utility", "study", "hallway", "dressing"],
+
+  "clarifying_questions": [
+    {
+      "id": "paint_type",
+      "question": "What type of paint? Matt emulsion is standard for walls. Silk is wipeable — good for kitchens, bathrooms, kids' rooms.",
+      "type": "choice",
+      "options": ["matt emulsion", "silk emulsion"],
+      "default": "matt emulsion"
+    },
+    {
+      "id": "new_plaster",
+      "question": "Is this new or bare plaster? If the walls have never been painted or you've just had them skimmed, yes.",
+      "type": "yes_no",
+      "default": false
+    },
+    {
+      "id": "feature_wall",
+      "question": "Do you want a feature wall in a different colour?",
+      "type": "yes_no",
+      "default": false
+    }
+  ],
+
+  "wall_selector": {
+    "enabled": true,
+    "description": "When feature_wall is true, show a top-down room plan where the user taps walls to toggle between Colour A (main) and Colour B (feature). Default all walls to Colour A.",
+    "max_colours": 2,
+    "colour_labels": ["Main colour", "Feature colour"]
+  },
+
+  "per_colour_questions": [
+    {
+      "id": "current_colour",
+      "question": "What colour are these walls now?",
+      "type": "choice",
+      "options": ["light", "medium", "dark"],
+      "default": "light"
+    },
+    {
+      "id": "new_colour",
+      "question": "What colour are you painting them?",
+      "type": "choice",
+      "options": ["light", "medium", "dark"],
+      "default": "light"
+    },
+    {
+      "id": "coats",
+      "question": "How many coats?",
+      "type": "choice",
+      "options": [2, 3],
+      "default": null,
+      "auto_logic": "light_to_light=2, light_to_medium=2, light_to_dark=2, medium_to_light=3, medium_to_medium=2, dark_to_light=3, dark_to_dark=2, new_plaster=2 (plus mist coat)"
+    }
+  ],
+
+  "door_window_questions": {
+    "enabled": true,
+    "per_wall": true,
+    "description": "If schema has door_count and window_count, pre-fill with 'Your room has X doors and Y windows — we've subtracted Xm² from your wall area.' Show 'Not right? Adjust' toggle to override."
+  },
+
+  "configurable_defaults": [
+    {
+      "id": "tin_size_litres",
+      "label": "Tin size",
+      "unit": "litres",
+      "default": 2.5,
+      "options": [1, 2.5, 5, 10]
+    },
+    {
+      "id": "coverage_sqm_per_litre",
+      "label": "Coverage per litre",
+      "unit": "sqm per litre per coat",
+      "default": 12,
+      "options": [10, 12, 14]
+    },
+    {
+      "id": "door_area_sqm",
+      "label": "Average door area",
+      "unit": "sqm",
+      "default": 1.6,
+      "options": [1.4, 1.6, 1.8]
+    },
+    {
+      "id": "window_area_sqm",
+      "label": "Average window area",
+      "unit": "sqm",
+      "default": 1.2,
+      "options": [0.8, 1.2, 1.5, 2.0]
+    }
+  ],
+
+  "materials": [
+    { "name": "Emulsion paint — main colour", "quantity_key": "tins_colour_a", "unit": "tins", "condition": null, "notes": "Includes mist coat allowance if new plaster — you water down the same paint" },
+    { "name": "Emulsion paint — feature colour", "quantity_key": "tins_colour_b", "unit": "tins", "condition": "feature_wall", "notes": "For the feature wall only" },
+    { "name": "Painter's tape", "quantity_key": "tape_rolls", "unit": "rolls", "condition": null, "notes": "For masking around window frames, door frames, ceiling edges, sockets. Get proper painter's tape not regular masking tape" },
+    { "name": "Dust sheets", "quantity_key": "dust_sheets", "unit": "sheets", "condition": null, "notes": "Cotton is heavier and doesn't slip. Cover floor and any furniture you can't move out" },
+    { "name": "Roller and tray set", "quantity_key": "roller_sets", "unit": "set", "condition": null, "notes": "9 inch roller. Medium pile sleeve for smooth walls, long pile for textured" },
+    { "name": "Roller sleeves (spare)", "quantity_key": "spare_sleeves", "unit": "sleeves", "condition": null, "notes": "One per colour minimum. Don't cross-contaminate colours" },
+    { "name": "Cutting-in brush (2-3 inch angled)", "quantity_key": "brushes", "unit": "brush", "condition": null, "notes": "Angled is easier for ceiling lines and around frames" },
+    { "name": "Extension pole", "quantity_key": "extension_poles", "unit": "pole", "condition": null, "notes": "For rolling high sections without a ladder. Telescopic poles fit standard roller handles" },
+    { "name": "Sugar soap", "quantity_key": "sugar_soap", "unit": "bottle", "condition": null, "notes": "For washing walls before painting. Removes grease, dust, nicotine" },
+    { "name": "Filler + scraper", "quantity_key": "filler", "unit": "tub + scraper", "condition": null, "notes": "For filling cracks, nail holes, dents before painting" },
+    { "name": "Sandpaper (120 grit)", "quantity_key": "sandpaper", "unit": "pack", "condition": null, "notes": "For sanding filler smooth and keying glossy surfaces" }
+  ],
+
+  "tools": {
+    "essential": [
+      { "name": "Roller and tray", "reason": "Main wall coverage" },
+      { "name": "2-3 inch angled brush", "reason": "Cutting in along ceiling, corners, frames" },
+      { "name": "Extension pole", "reason": "Reaching top of walls without a ladder" },
+      { "name": "Scraper / filling knife", "reason": "Filling holes and scraping loose paint" },
+      { "name": "Sandpaper (120 grit)", "reason": "Smoothing filler and keying surfaces" },
+      { "name": "Dust sheets", "reason": "Protecting floors and furniture" },
+      { "name": "Painter's tape", "reason": "Masking edges for clean lines" },
+      { "name": "Bucket", "reason": "Mixing mist coat and washing tools" },
+      { "name": "Step ladder", "reason": "Cutting in along ceiling and high corners" }
+    ],
+    "helpful": [
+      { "name": "Paint kettle", "reason": "Easier to hold than a full tin when cutting in" },
+      { "name": "Caulk gun + decorator's caulk", "reason": "Filling gaps between walls and ceiling for a cleaner line than tape alone" },
+      { "name": "LED work light", "reason": "Raking light across the wall shows missed spots and drips" }
+    ]
+  },
+
+  "steps": [
+    "Clear the room as much as possible. Move furniture to centre, cover with dust sheets. Remove curtains, blinds, pictures. Take off light switch and socket covers if comfortable (switch off at consumer unit first).",
+    "Lay dust sheets across entire floor. Tape down at edges so they don't shift.",
+    "Wash walls with sugar soap and warm water. Let dry completely.",
+    "Fill any holes and cracks with filler. Sand smooth with 120 grit when dry.",
+    "Sand any glossy surfaces (existing silk paint) to key the surface.",
+    "Run painter's tape along ceiling line, around door frames, window frames, skirting boards, sockets and switches.",
+    "Mist coat if new plaster: mix emulsion 70:30 with water, apply with roller. Let dry overnight. This uses the same paint — don't buy a separate product.",
+    "Cut in first coat with the angled brush — 2-3 inch strip along ceiling, corners, around frames and sockets. Work wall by wall, not the whole room at once.",
+    "Roll the first coat. Apply in a W or M pattern, then roll out evenly. Work in 1 metre sections, floor to ceiling.",
+    "Let it dry — check the tin, usually 2-4 hours. Don't rush it.",
+    "Cut in second coat. Same process.",
+    "Roll the second coat. This is the one that matters for finish quality.",
+    "Third coat if needed — especially dark to light colour changes.",
+    "Remove tape while the last coat is still slightly tacky. Pull at 45 degrees, slowly.",
+    "Touch up missed spots in good light. Refit socket covers, rehang curtains and pictures."
+  ],
+
+  "pro_tips": [
+    "Cut in and roll the same wall before moving on. Don't cut in the whole room then start rolling — the edges dry and you'll see a line.",
+    "Don't overload the roller. Two lighter passes beat one heavy one.",
+    "Dampen new roller sleeves under the tap before using. Dry sleeves don't pick up paint evenly.",
+    "Paint in daylight if you can. Artificial light hides missed spots.",
+    "Caulk before you paint. Run a bead of decorator's caulk along the ceiling line and skirting, smooth with a wet finger, let dry, then paint over.",
+    "Silk emulsion shows every imperfection. If walls aren't smooth, matt is more forgiving.",
+    "New plaster mist coat is not optional. Skip it and top coats will peel off within months."
+  ],
+
+  "caveats": [
+    "Check the coverage rate on your tin. Default is 12 sqm/litre. Premium paints may do 14, budget might only do 10.",
+    "Textured or artex walls use 20-30% more paint than the calculator assumes.",
+    "Window and door sizes vary. The defaults are averages — adjust if you have large patio doors or floor-to-ceiling windows.",
+    "Very dark to very light may need a primer coat rather than just extra emulsion coats.",
+    "Damp walls: treat the damp first. Painting over it won't fix it.",
+    "Wallpapered walls: strip it first. Painting over wallpaper causes problems.",
+    "This template is walls only. Ceiling is a separate job.",
+    "If one wall has a fitted wardrobe you're not painting behind, your area is less."
+  ],
+
+  "refittr_message": "Coming in June — check Refittr for second-hand fixtures guaranteed to fit your room."
+}

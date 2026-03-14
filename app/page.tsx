@@ -12,12 +12,29 @@ import {
   BookOpen,
   DoorOpen,
   Home,
+  Layers,
+  Paintbrush,
+  Hammer,
+  Wrench,
+  Zap,
+  Clock,
+  type LucideIcon,
 } from "lucide-react";
 import { supabase, type HouseSchema, type Room } from "@/lib/supabase";
+import { getTemplatesForRoom, type JobTemplate } from "@/lib/templates";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
-type AppState = "search" | "rooms" | "project";
+type AppState = "search" | "rooms" | "jobs" | "plan";
+
+const ICON_MAP: Record<string, LucideIcon> = {
+  Layers,
+  Paintbrush,
+  Hammer,
+  Wrench,
+  Zap,
+  Home,
+};
 
 const FLOOR_LABELS: Record<number, string> = {
   0: "Ground Floor",
@@ -168,6 +185,7 @@ export default function Page() {
   const [appState, setAppState] = useState<AppState>("search");
   const [selectedSchema, setSelectedSchema] = useState<HouseSchema | null>(null);
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
+  const [selectedJob, setSelectedJob] = useState<JobTemplate | null>(null);
 
   // Search state
   const [query, setQuery] = useState("");
@@ -253,19 +271,32 @@ export default function Page() {
 
   const selectRoom = (room: Room) => {
     setSelectedRoom(room);
-    setAppState("project");
+    setSelectedJob(null);
+    setAppState("jobs");
+  };
+
+  const selectJob = (job: JobTemplate) => {
+    setSelectedJob(job);
+    setAppState("plan");
   };
 
   const goBackToSearch = () => {
     setAppState("search");
     setSelectedSchema(null);
     setSelectedRoom(null);
+    setSelectedJob(null);
     setRooms([]);
   };
 
   const goBackToRooms = () => {
     setAppState("rooms");
     setSelectedRoom(null);
+    setSelectedJob(null);
+  };
+
+  const goBackToJobs = () => {
+    setAppState("jobs");
+    setSelectedJob(null);
   };
 
   // Group rooms by floor
@@ -459,49 +490,130 @@ export default function Page() {
           </div>
         )}
 
-        {/* ── STATE 3: Project placeholder ── */}
-        {appState === "project" && selectedSchema && selectedRoom && (
+        {/* ── STATE 3: Job selector ── */}
+        {appState === "jobs" && selectedSchema && selectedRoom && (() => {
+          const templates = getTemplatesForRoom(selectedRoom.room_type);
+          return (
+            <div className="space-y-6">
+              {/* Back */}
+              <button
+                onClick={goBackToRooms}
+                className="flex items-center gap-1.5 text-sm text-[#64748B] hover:text-[#0F172A] transition-colors"
+              >
+                <ArrowLeft size={14} />
+                Back to rooms
+              </button>
+
+              {/* Compact summary */}
+              <div className="flex items-baseline gap-3 flex-wrap">
+                <span className="text-sm font-medium text-[#0F172A]">
+                  {selectedRoom.room_name}
+                </span>
+                <span className="text-xs text-[#94A3B8]">
+                  {fmt(selectedRoom.length_cm)}m × {fmt(selectedRoom.width_cm)}m &middot; {area(selectedRoom.length_cm, selectedRoom.width_cm)} sqm
+                </span>
+                <span className="text-xs text-[#CBD5E1]">&middot;</span>
+                <span className="text-xs text-[#94A3B8]">
+                  {selectedSchema.model_name}
+                  {selectedSchema.builders && ` by ${selectedSchema.builders.name}`}
+                </span>
+              </div>
+
+              <h1 className="text-xl font-semibold text-[#0F172A]">What do you want to do?</h1>
+
+              {templates.length > 0 ? (
+                <div className="space-y-3">
+                  {templates.map((template) => {
+                    const Icon = ICON_MAP[template.icon] ?? Home;
+                    return (
+                      <button
+                        key={template.job_id}
+                        onClick={() => selectJob(template)}
+                        className="w-full border border-[#E2E8F0] rounded-lg px-4 py-4 flex items-start gap-4 hover:border-[#10B981] hover:bg-[#F8FAFC] transition-colors text-left group"
+                      >
+                        <Icon size={20} className="text-[#10B981] flex-shrink-0 mt-0.5" />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap mb-1">
+                            <p className="text-sm font-medium text-[#0F172A] group-hover:text-[#10B981] transition-colors">
+                              {template.job_name}
+                            </p>
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-[#F0FDF4] text-[#059669] font-medium capitalize">
+                              {template.difficulty}
+                            </span>
+                          </div>
+                          <p className="text-xs text-[#94A3B8] flex items-center gap-1">
+                            <Clock size={11} className="flex-shrink-0" />
+                            {template.estimated_time}
+                          </p>
+                        </div>
+                        <ArrowLeft size={14} className="text-[#CBD5E1] rotate-180 flex-shrink-0 mt-1" />
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="border border-[#E2E8F0] rounded-lg p-5">
+                  <p className="text-sm text-[#64748B]">
+                    We don&apos;t have any project templates for this room type yet.
+                  </p>
+                </div>
+              )}
+
+              {/* Project request form */}
+              <div className="border border-[#E2E8F0] rounded-lg p-5">
+                <p className="text-sm font-medium text-[#475569] mb-1">Don&apos;t see your project?</p>
+                <p className="text-xs text-[#64748B] mb-4">
+                  Tell us what job you want to do and we&apos;ll build a template for it.
+                </p>
+                <ProjectRequestForm />
+              </div>
+
+              {/* Refittr teaser */}
+              <div className="border border-[#E2E8F0] rounded-lg p-5 bg-[#F8FAFC]">
+                <p className="text-sm text-[#475569] leading-relaxed mb-3">
+                  Imagine getting a materials list and then being matched with second-hand fixtures guaranteed to fit your room. That&apos;s what&apos;s coming.
+                </p>
+                <a
+                  href="https://refittr.co.uk"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-medium text-[#10B981] hover:text-[#059669] transition-colors"
+                >
+                  Check out Refittr &rarr;
+                </a>
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* ── STATE 4: Plan placeholder ── */}
+        {appState === "plan" && selectedSchema && selectedRoom && selectedJob && (
           <div className="space-y-6">
             {/* Back */}
             <button
-              onClick={goBackToRooms}
+              onClick={goBackToJobs}
               className="flex items-center gap-1.5 text-sm text-[#64748B] hover:text-[#0F172A] transition-colors"
             >
               <ArrowLeft size={14} />
-              Back to rooms
+              Back to projects
             </button>
 
-            {/* Selected house + room */}
-            <div className="border border-[#E2E8F0] rounded-lg p-5">
-              <p className="text-xs text-[#94A3B8] uppercase tracking-wide font-semibold mb-3">Your selection</p>
-              <div className="space-y-2">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-xs text-[#94A3B8] w-12 flex-shrink-0">House</span>
-                  <span className="text-sm text-[#0F172A]">
-                    {selectedSchema.model_name}
-                    {selectedSchema.builders && (
-                      <span className="text-[#64748B]"> by {selectedSchema.builders.name}</span>
-                    )}
-                  </span>
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-xs text-[#94A3B8] w-12 flex-shrink-0">Room</span>
-                  <span className="text-sm text-[#0F172A]">{selectedRoom.room_name}</span>
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-xs text-[#94A3B8] w-12 flex-shrink-0">Size</span>
-                  <span className="text-sm text-[#475569]">
-                    {fmt(selectedRoom.length_cm)}m × {fmt(selectedRoom.width_cm)}m &middot; {area(selectedRoom.length_cm, selectedRoom.width_cm)} sqm
-                  </span>
-                </div>
-              </div>
+            {/* Summary */}
+            <div className="flex items-baseline gap-3 flex-wrap">
+              <span className="text-sm font-medium text-[#0F172A]">{selectedJob.job_name}</span>
+              <span className="text-xs text-[#CBD5E1]">&middot;</span>
+              <span className="text-xs text-[#94A3B8]">{selectedRoom.room_name}</span>
+              <span className="text-xs text-[#CBD5E1]">&middot;</span>
+              <span className="text-xs text-[#94A3B8]">
+                {fmt(selectedRoom.length_cm)}m × {fmt(selectedRoom.width_cm)}m
+              </span>
             </div>
 
             {/* Coming soon */}
             <div className="border border-[#E2E8F0] rounded-lg p-5 bg-[#F8FAFC]">
-              <p className="text-sm font-medium text-[#475569] mb-1">Job selection coming soon</p>
+              <p className="text-sm font-medium text-[#475569] mb-1">Calculation engine coming soon!</p>
               <p className="text-sm text-[#64748B] leading-relaxed">
-                We&apos;re building this right now. Once it&apos;s live, you&apos;ll tell us what you want to do and we&apos;ll give you an exact materials list from your actual room dimensions.
+                Next up: answer a few questions about your job and we&apos;ll calculate an exact materials list from your room dimensions.
               </p>
             </div>
 
