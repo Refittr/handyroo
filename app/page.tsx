@@ -195,62 +195,19 @@ export default function Page() {
       try {
         const q = query.trim();
 
-        // Run all lookups in parallel
-        const [builderRes, streetRes, devRes] = await Promise.all([
-          // Builder name match
-          supabase.from("builders").select("id").ilike("name", `%${q}%`),
-          // Postcode / postcode_area match on streets
-          supabase.from("streets").select("id").or(
-            `postcode.ilike.%${q}%,postcode_area.ilike.%${q}%`
-          ),
-          // Development name match → get their street IDs too
-          supabase.from("developments").select("id").ilike("name", `%${q}%`),
-        ]);
-
-        const builderIds: string[] = (builderRes.data || []).map((b: any) => b.id);
-
-        // Streets from postcode search
-        const streetIdsFromPostcode: string[] = (streetRes.data || []).map((s: any) => s.id);
-
-        // Streets from development name match
-        let streetIdsFromDev: string[] = [];
-        const devIds: string[] = (devRes.data || []).map((d: any) => d.id);
-        if (devIds.length > 0) {
-          const { data: devStreets } = await supabase
-            .from("streets")
-            .select("id")
-            .in("development_id", devIds);
-          streetIdsFromDev = (devStreets || []).map((s: any) => s.id);
-        }
-
-        // All street IDs → schema IDs via junction table
-        const allStreetIds = [...new Set([...streetIdsFromPostcode, ...streetIdsFromDev])];
-        let schemaIdsFromStreets: string[] = [];
-        if (allStreetIds.length > 0) {
-          const { data: junctionRows } = await supabase
-            .from("house_schema_streets")
-            .select("house_schema_id")
-            .in("street_id", allStreetIds);
-          schemaIdsFromStreets = [...new Set((junctionRows || []).map((r: any) => r.house_schema_id))];
-        }
-
-        // Build the schema query: match model_name OR builder OR street-linked schemas
-        const orParts: string[] = [`model_name.ilike.%${q}%`];
-        if (builderIds.length > 0) orParts.push(`builder_id.in.(${builderIds.join(",")})`);
-        if (schemaIdsFromStreets.length > 0) orParts.push(`id.in.(${schemaIdsFromStreets.join(",")})`);
-
         const { data, error } = await supabase
-          .from("house_schemas")
-          .select("id, builder_id, model_name, bedrooms, property_type, builders(id, name)")
-          .or(orParts.join(","))
-          .limit(10);
+          .rpc("search_house_schemas", { search_term: q });
 
         if (error) throw error;
 
-        // Normalise builders (Supabase returns array from join)
-        const normalised = (data || []).map((s: any) => ({
-          ...s,
-          builders: Array.isArray(s.builders) ? s.builders[0] ?? undefined : s.builders,
+        // RPC returns builder_name as a flat field — reshape to match HouseSchema
+        const normalised = (data || []).map((r: any) => ({
+          id: r.id,
+          builder_id: r.builder_id,
+          model_name: r.model_name,
+          bedrooms: r.bedrooms,
+          property_type: r.property_type,
+          builders: r.builder_name ? { id: r.builder_id, name: r.builder_name } : undefined,
         })) as HouseSchema[];
         setResults(normalised);
       } catch {
