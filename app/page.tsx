@@ -194,14 +194,32 @@ export default function Page() {
       setIsSearching(true);
       try {
         const q = query.trim();
-        const { data, error } = await supabase
+
+        // 1. Find builder IDs matching the query
+        const { data: builderData } = await supabase
+          .from("builders")
+          .select("id")
+          .ilike("name", `%${q}%`);
+        const builderIds = (builderData || []).map((b: any) => b.id);
+
+        // 2. Query schemas matching model_name OR matching builder IDs
+        let schemaQuery = supabase
           .from("house_schemas")
           .select("id, builder_id, model_name, bedrooms, property_type, builders(id, name)")
-          .or(`model_name.ilike.%${q}%,builders.name.ilike.%${q}%`)
           .limit(10);
 
+        if (builderIds.length > 0) {
+          schemaQuery = schemaQuery.or(
+            `model_name.ilike.%${q}%,builder_id.in.(${builderIds.join(",")})`
+          );
+        } else {
+          schemaQuery = schemaQuery.ilike("model_name", `%${q}%`);
+        }
+
+        const { data, error } = await schemaQuery;
         if (error) throw error;
-        // Supabase returns builders as array from join — normalise to single object
+
+        // Normalise builders (Supabase returns array from join)
         const normalised = (data || []).map((s: any) => ({
           ...s,
           builders: Array.isArray(s.builders) ? s.builders[0] ?? undefined : s.builders,
@@ -293,7 +311,7 @@ export default function Page() {
                 What&apos;s your house type?
               </h1>
               <p className="text-slate-500 text-sm">
-                We know the dimensions of thousands of UK new builds.
+                We know the dimensions of thousands of UK homes.
               </p>
             </div>
 
