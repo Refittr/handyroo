@@ -28,9 +28,7 @@ export default function SiteNav({ activeSite }: SiteNavProps) {
     <header className="sticky top-0 z-50 bg-white border-b border-[#E2E8F0]">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         <a href="https://refittr.co.uk" className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-[#10B981] rounded-lg flex items-center justify-center flex-shrink-0">
-            <span className="text-white font-bold text-sm" style={{ fontFamily: 'var(--font-sora)' }}>R</span>
-          </div>
+          <img src="/refittr-app-icon-512.png" alt="Refittr" className="w-8 h-8 rounded-lg" />
           <span className="font-bold text-[#0F172A] text-lg" style={{ fontFamily: 'var(--font-sora)' }}>Refittr</span>
         </a>
 

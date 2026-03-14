@@ -7,9 +7,7 @@ export default function SiteFooter() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-7 h-7 bg-[#10B981] rounded-md flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-xs" style={{ fontFamily: 'var(--font-sora)' }}>R</span>
-              </div>
+              <img src="/refittr-app-icon-512.png" alt="Refittr" className="w-7 h-7 rounded-md" />
               <span className="text-white font-bold" style={{ fontFamily: 'var(--font-sora)' }}>Refittr</span>
             </div>
             <p className="text-sm">Built the same. Fits the same.</p>
