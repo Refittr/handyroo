@@ -96,7 +96,7 @@ export function calculateMaterials(
       barCounts[d.bar_type] = (barCounts[d.bar_type] ?? 0) + 1;
     });
     for (const [bar_type, count] of Object.entries(barCounts)) {
-      door_bars.push({ bar_type, count, label: `${count}Ã— ${bar_type}` });
+      door_bars.push({ bar_type, count, label: `${count}Ã- ${bar_type}` });
     }
 
   } else if (template.job_id === "paint_walls") {
@@ -256,7 +256,7 @@ export function calculateMaterials(
       vinylBarCounts[d.bar_type] = (vinylBarCounts[d.bar_type] ?? 0) + 1;
     });
     for (const [bar_type, count] of Object.entries(vinylBarCounts)) {
-      door_bars.push({ bar_type, count, label: `${count}Ã— ${bar_type}` });
+      door_bars.push({ bar_type, count, label: `${count}Ã- ${bar_type}` });
     }
   }
 
@@ -283,3 +283,4 @@ export function calculateMaterials(
 
   return { materials, door_bars, calculations: calcs };
 }
+
