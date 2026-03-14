@@ -530,7 +530,7 @@ export default function Page() {
             >
               Refittr
             </a>{" "}
-            — Built in Liverpool.
+            - Built in Liverpool.
           </p>
         </div>
       </footer>
