@@ -15,6 +15,7 @@ export interface DoorwayEntry {
 
 export interface MaterialLine {
   name: string;
+  quantity_key: string;
   quantity: number;
   unit: string;
   notes: string;
@@ -204,7 +205,7 @@ export function calculateMaterials(
     if (!conditionMet(mat.condition)) continue;
     const qty = quantities[mat.quantity_key] ?? 0;
     if (qty === 0 && mat.condition !== null) continue;
-    materials.push({ name: mat.name, quantity: qty, unit: mat.unit, notes: mat.notes });
+    materials.push({ name: mat.name, quantity_key: mat.quantity_key, quantity: qty, unit: mat.unit, notes: mat.notes });
   }
 
   return { materials, door_bars, calculations: calcs };

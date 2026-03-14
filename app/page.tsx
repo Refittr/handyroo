@@ -18,6 +18,7 @@ import {
   Wrench,
   Zap,
   Clock,
+  FileImage,
   type LucideIcon,
 } from "lucide-react";
 import { supabase, type HouseSchema, type Room } from "@/lib/supabase";
@@ -230,6 +231,8 @@ export default function Page() {
           model_name: r.model_name,
           bedrooms: r.bedrooms,
           property_type: r.property_type,
+          exterior_photo_url: r.exterior_photo_url ?? null,
+          floor_plan_url: r.floor_plan_url ?? null,
           builders: r.builder_name ? { id: r.builder_id, name: r.builder_name } : undefined,
         })) as HouseSchema[];
         setResults(normalised);
@@ -362,9 +365,25 @@ export default function Page() {
                   <button
                     key={schema.id}
                     onClick={() => selectSchema(schema)}
-                    className="w-full px-4 py-3 text-left hover:bg-[#F8FAFC] transition-colors flex items-center justify-between gap-4"
+                    className="w-full px-4 py-3 text-left hover:bg-[#F8FAFC] transition-colors flex items-center gap-3"
                   >
-                    <div>
+                    {/* Thumbnail */}
+                    {schema.exterior_photo_url ? (
+                      <img
+                        src={schema.exterior_photo_url}
+                        alt={schema.model_name}
+                        width={64}
+                        height={64}
+                        className="w-16 h-16 rounded-md object-cover flex-shrink-0"
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-md bg-[#F1F5F9] flex items-center justify-center flex-shrink-0">
+                        <Home size={24} className="text-[#CBD5E1]" />
+                      </div>
+                    )}
+
+                    {/* Text */}
+                    <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-[#0F172A]">
                         {schema.model_name}
                         {schema.builders && (
@@ -374,7 +393,20 @@ export default function Page() {
                       <p className="text-xs text-[#94A3B8] mt-0.5">
                         {schema.bedrooms} bed {schema.property_type}
                       </p>
+                      {schema.floor_plan_url && (
+                        <a
+                          href={schema.floor_plan_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center gap-1 text-xs text-[#087F8C] mt-1 hover:underline"
+                        >
+                          <FileImage size={11} />
+                          View floor plan
+                        </a>
+                      )}
                     </div>
+
                     <ArrowLeft size={14} className="text-[#CBD5E1] rotate-180 flex-shrink-0" />
                   </button>
                 ))}

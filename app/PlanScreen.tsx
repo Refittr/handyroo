@@ -22,6 +22,18 @@ import { calculateMaterials, type DoorwayEntry } from "@/lib/calculator";
 
 function fmt(cm: number) { return (cm / 100).toFixed(2); }
 
+function quantityAnnotation(quantityKey: string, defaults: Record<string, number>): string | null {
+  switch (quantityKey) {
+    case "laminate_packs": return `${defaults.pack_coverage_sqm} sqm/pack`;
+    case "underlay_rolls": return `${defaults.underlay_roll_sqm} sqm/roll`;
+    case "dpm_rolls":      return `${defaults.underlay_roll_sqm} sqm/roll`;
+    case "beading_lengths": return `${defaults.beading_length_m}m`;
+    case "tins_colour_a":  return `${defaults.tin_size_litres}L`;
+    case "tins_colour_b":  return `${defaults.tin_size_litres}L`;
+    default: return null;
+  }
+}
+
 function PillGroup<T extends string | number | boolean>({
   options,
   value,
@@ -46,7 +58,7 @@ function PillGroup<T extends string | number | boolean>({
             className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
               selected
                 ? "bg-[#087F8C] text-white border-[#087F8C]"
-                : "bg-white text-[#475569] border-[#E2E8F0] hover:border-[#087F8C] hover:text-[#087F8C]"
+                : "bg-white text-[#475569] border-[#CBD5E1] hover:border-[#087F8C] hover:text-[#087F8C]"
             }`}
           >
             {label}
@@ -65,17 +77,17 @@ function Collapsible({ title, icon, defaultOpen = false, children }: {
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="border border-[#E2E8F0] rounded-lg overflow-hidden">
+    <div className="border border-[#CBD5E1] rounded-lg overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-[#F8FAFC] transition-colors"
+        className="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-[#F1F5F9] transition-colors"
       >
         <div className="flex items-center gap-2">
           {icon}
           <span className="text-sm font-semibold text-[#0F172A]">{title}</span>
         </div>
-        {open ? <ChevronUp size={16} className="text-[#94A3B8]" /> : <ChevronDown size={16} className="text-[#94A3B8]" />}
+        {open ? <ChevronUp size={16} className="text-[#64748B]" /> : <ChevronDown size={16} className="text-[#64748B]" />}
       </button>
       {open && <div className="px-4 pb-4 pt-1">{children}</div>}
     </div>
@@ -264,7 +276,7 @@ export default function PlanScreen({
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
                       assignment === "b"
                         ? "bg-[#7C3AED] text-white border-[#7C3AED]"
-                        : "bg-white text-[#475569] border-[#E2E8F0] hover:border-[#7C3AED] hover:text-[#7C3AED]"
+                        : "bg-white text-[#475569] border-[#CBD5E1] hover:border-[#7C3AED] hover:text-[#7C3AED]"
                     }`}
                   >
                     {label}
@@ -272,7 +284,7 @@ export default function PlanScreen({
                 );
               })}
             </div>
-            <p className="text-xs text-[#94A3B8] mt-1.5">White/unselected = main colour, purple = feature colour</p>
+            <p className="text-xs text-[#64748B] mt-1.5">White/unselected = main colour, purple = feature colour</p>
           </div>
         )}
 
@@ -304,7 +316,7 @@ export default function PlanScreen({
                 <button
                   type="button"
                   onClick={() => setDoorwayCountOverride(Math.max(0, effectiveDoorCount - 1))}
-                  className="w-8 h-8 rounded-lg border border-[#E2E8F0] flex items-center justify-center hover:border-[#087F8C] transition-colors"
+                  className="w-8 h-8 rounded-lg border border-[#CBD5E1] flex items-center justify-center hover:border-[#087F8C] transition-colors"
                 >
                   <Minus size={14} />
                 </button>
@@ -312,7 +324,7 @@ export default function PlanScreen({
                 <button
                   type="button"
                   onClick={() => setDoorwayCountOverride(effectiveDoorCount + 1)}
-                  className="w-8 h-8 rounded-lg border border-[#E2E8F0] flex items-center justify-center hover:border-[#087F8C] transition-colors"
+                  className="w-8 h-8 rounded-lg border border-[#CBD5E1] flex items-center justify-center hover:border-[#087F8C] transition-colors"
                 >
                   <Plus size={14} />
                 </button>
@@ -336,7 +348,7 @@ export default function PlanScreen({
                             className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
                               selected
                                 ? "bg-[#087F8C] text-white border-[#087F8C]"
-                                : "bg-white text-[#475569] border-[#E2E8F0] hover:border-[#087F8C]"
+                                : "bg-white text-[#475569] border-[#CBD5E1] hover:border-[#087F8C]"
                             }`}
                           >
                             {opt.label}
@@ -353,13 +365,13 @@ export default function PlanScreen({
       </div>
 
       {/* ── Configurable defaults ────────────────────────────────────────────── */}
-      <div className="border border-[#E2E8F0] rounded-lg overflow-hidden">
+      <div className="border border-[#CBD5E1] rounded-lg overflow-hidden">
         <button
           type="button"
           onClick={() => setShowDefaults(!showDefaults)}
-          className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-[#F8FAFC] transition-colors"
+          className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-[#F1F5F9] transition-colors"
         >
-          <span className="text-sm font-medium text-[#475569]">Adjust assumptions</span>
+          <span className="text-sm font-semibold text-[#0F172A]">Adjust assumptions</span>
           {showDefaults ? <ChevronUp size={14} className="text-[#64748B]" /> : <ChevronDown size={14} className="text-[#64748B]" />}
         </button>
         {showDefaults && (
@@ -367,7 +379,7 @@ export default function PlanScreen({
             {job.configurable_defaults.map((cd) => (
               <div key={cd.id}>
                 <p className="text-xs font-medium text-[#475569] mb-1.5">
-                  {cd.label} <span className="text-[#94A3B8] font-normal">({cd.unit})</span>
+                  {cd.label} <span className="text-[#64748B] font-normal">({cd.unit})</span>
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {cd.options.map((opt) => {
@@ -380,7 +392,7 @@ export default function PlanScreen({
                         className={`px-3 py-1 rounded-lg text-sm border transition-colors ${
                           selected
                             ? "bg-[#087F8C] text-white border-[#087F8C]"
-                            : "bg-white text-[#475569] border-[#E2E8F0] hover:border-[#087F8C]"
+                            : "bg-white text-[#475569] border-[#CBD5E1] hover:border-[#087F8C]"
                         }`}
                       >
                         {opt}
@@ -395,10 +407,10 @@ export default function PlanScreen({
       </div>
 
       {/* ── DIVIDER ──────────────────────────────────────────────────────────── */}
-      <div className="border-t border-[#E2E8F0]" />
+      <div className="border-t border-[#CBD5E1]" />
 
       {/* ── Room summary ─────────────────────────────────────────────────────── */}
-      <div className="bg-[#F8FAFC] rounded-lg p-4 space-y-1.5 text-sm">
+      <div className="bg-[#F1F5F9] rounded-lg p-4 space-y-1.5 text-sm">
         {isLaminate && (
           <>
             <p className="text-[#0F172A]">
@@ -433,20 +445,22 @@ export default function PlanScreen({
           <ShoppingCart size={16} className="text-[#087F8C]" />
           <h2 className="text-base font-semibold text-[#0F172A]">Shopping list</h2>
         </div>
-        <div className="border border-[#E2E8F0] rounded-lg divide-y divide-[#F1F5F9]">
-          {result.materials.map((mat, i) => (
+        <div className="border border-[#CBD5E1] rounded-lg divide-y divide-[#E2E8F0]">
+          {result.materials.map((mat, i) => {
+            const annotation = quantityAnnotation(mat.quantity_key, defaults);
+            return (
             <div key={i} className="px-4 py-3">
               <div className="flex items-baseline justify-between gap-3">
                 <span className="text-sm font-medium text-[#0F172A]">{mat.name}</span>
                 <span className="text-sm font-semibold text-[#087F8C] flex-shrink-0">
-                  {mat.quantity} {mat.unit}
+                  {mat.quantity} {mat.unit}{annotation ? ` (${annotation})` : ""}
                 </span>
               </div>
               {mat.notes && (
-                <p className="text-xs text-[#94A3B8] mt-0.5">{mat.notes}</p>
+                <p className="text-xs text-[#64748B] mt-0.5">{mat.notes}</p>
               )}
             </div>
-          ))}
+          );})}
           {result.door_bars.length > 0 && (
             <div className="px-4 py-3">
               <div className="flex items-baseline justify-between gap-3">
@@ -456,7 +470,7 @@ export default function PlanScreen({
                 </span>
               </div>
               {result.door_bars.map((bar, j) => (
-                <p key={j} className="text-xs text-[#94A3B8] mt-0.5">{bar.label}</p>
+                <p key={j} className="text-xs text-[#64748B] mt-0.5">{bar.label}</p>
               ))}
             </div>
           )}
@@ -471,23 +485,23 @@ export default function PlanScreen({
       >
         <div className="space-y-4">
           <div>
-            <p className="text-xs font-semibold text-[#94A3B8] uppercase tracking-wide mb-2">Essential</p>
+            <p className="text-xs font-semibold text-[#64748B] uppercase tracking-wide mb-2">Essential</p>
             <div className="space-y-2">
               {(job.tools.essential as Array<{ name: string; reason: string }>).map((t, i) => (
                 <div key={i} className="flex gap-2">
                   <span className="text-sm font-medium text-[#0F172A] min-w-0">{t.name}</span>
-                  <span className="text-xs text-[#94A3B8] mt-0.5">— {t.reason}</span>
+                  <span className="text-xs text-[#64748B] mt-0.5">— {t.reason}</span>
                 </div>
               ))}
             </div>
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#94A3B8] uppercase tracking-wide mb-2">Helpful extras</p>
+            <p className="text-xs font-semibold text-[#64748B] uppercase tracking-wide mb-2">Helpful extras</p>
             <div className="space-y-2">
               {(job.tools.helpful as Array<{ name: string; reason: string }>).map((t, i) => (
                 <div key={i} className="flex gap-2">
                   <span className="text-sm font-medium text-[#0F172A] min-w-0">{t.name}</span>
-                  <span className="text-xs text-[#94A3B8] mt-0.5">— {t.reason}</span>
+                  <span className="text-xs text-[#64748B] mt-0.5">— {t.reason}</span>
                 </div>
               ))}
             </div>
@@ -496,17 +510,17 @@ export default function PlanScreen({
       </Collapsible>
 
       {/* ── Steps ─────────────────────────────────────────────────────────────── */}
-      <div className="border border-[#E2E8F0] rounded-lg overflow-hidden">
+      <div className="border border-[#CBD5E1] rounded-lg overflow-hidden">
         <button
           type="button"
           onClick={() => setStepsOpen(!stepsOpen)}
-          className="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-[#F8FAFC] transition-colors"
+          className="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-[#F1F5F9] transition-colors"
         >
           <div className="flex items-center gap-2">
             <ListChecks size={15} className="text-[#087F8C]" />
             <span className="text-sm font-semibold text-[#0F172A]">Step-by-step guide</span>
           </div>
-          {stepsOpen ? <ChevronUp size={16} className="text-[#94A3B8]" /> : <ChevronDown size={16} className="text-[#94A3B8]" />}
+          {stepsOpen ? <ChevronUp size={16} className="text-[#64748B]" /> : <ChevronDown size={16} className="text-[#64748B]" />}
         </button>
         {stepsOpen && (
           <div className="px-4 pb-4 pt-1 space-y-3">
@@ -523,17 +537,17 @@ export default function PlanScreen({
       </div>
 
       {/* ── Pro tips ──────────────────────────────────────────────────────────── */}
-      <div className="border border-[#E2E8F0] rounded-lg overflow-hidden">
+      <div className="border border-[#CBD5E1] rounded-lg overflow-hidden">
         <button
           type="button"
           onClick={() => setTipsOpen(!tipsOpen)}
-          className="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-[#F8FAFC] transition-colors"
+          className="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-[#F1F5F9] transition-colors"
         >
           <div className="flex items-center gap-2">
             <Lightbulb size={15} className="text-[#087F8C]" />
             <span className="text-sm font-semibold text-[#0F172A]">Pro tips</span>
           </div>
-          {tipsOpen ? <ChevronUp size={16} className="text-[#94A3B8]" /> : <ChevronDown size={16} className="text-[#94A3B8]" />}
+          {tipsOpen ? <ChevronUp size={16} className="text-[#64748B]" /> : <ChevronDown size={16} className="text-[#64748B]" />}
         </button>
         {tipsOpen && (
           <div className="px-4 pb-4 pt-1 space-y-2">
@@ -562,7 +576,7 @@ export default function PlanScreen({
       </div>
 
       {/* ── Refittr teaser ────────────────────────────────────────────────────── */}
-      <div className="border border-[#E2E8F0] rounded-lg p-5 bg-[#F8FAFC]">
+      <div className="border border-[#CBD5E1] rounded-lg p-5 bg-[#F1F5F9]">
         <p className="text-sm text-[#475569] leading-relaxed mb-3">{job.refittr_message as string}</p>
         <a
           href="https://refittr.co.uk"

@@ -16,6 +16,8 @@ export interface HouseSchema {
   model_name: string
   bedrooms: number
   property_type: string
+  exterior_photo_url?: string | null
+  floor_plan_url?: string | null
   builders?: Builder
 }
 
