@@ -1,5 +1,6 @@
 import laminateFlooring from "@/data/templates/laminate_flooring.json";
 import paintWalls from "@/data/templates/paint_walls.json";
+import vinylFlooring from "@/data/templates/vinyl_flooring.json";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -18,6 +19,7 @@ export interface ConfigurableDefault {
   unit: string;
   default: number;
   options: number[];
+  condition?: string;
 }
 
 export interface Material {
@@ -60,6 +62,7 @@ export interface JobTemplate {
 const ALL_TEMPLATES: JobTemplate[] = [
   laminateFlooring as unknown as JobTemplate,
   paintWalls as unknown as JobTemplate,
+  vinylFlooring as unknown as JobTemplate,
 ];
 
 // ── Exported functions ────────────────────────────────────────────────────────

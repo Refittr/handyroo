@@ -13,7 +13,7 @@ export default function CrossLinkBanner({ site }: CrossLinkBannerProps) {
                 Need help planning a project?
               </p>
               <p className="text-sm text-[#475569] mt-0.5">
-                Try HandyRoo — our AI materials calculator. Tell us what you want to do and we&apos;ll give you an exact materials list.
+                Try HandyRoo - our AI materials calculator. Tell us what you want to do and we&apos;ll give you an exact materials list.
               </p>
             </div>
             <a
@@ -30,7 +30,7 @@ export default function CrossLinkBanner({ site }: CrossLinkBannerProps) {
                 Need to check your room dimensions?
               </p>
               <p className="text-sm text-[#475569] mt-0.5">
-                Try RoomSize — instant room measurements for your house type. No tape measure required.
+                Try RoomSize - instant room measurements for your house type. No tape measure required.
               </p>
             </div>
             <a
@@ -47,10 +47,10 @@ export default function CrossLinkBanner({ site }: CrossLinkBannerProps) {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <p className="font-semibold text-[#0F172A]" style={{ fontFamily: 'var(--font-sora)' }}>
-              Refittr — the circular economy marketplace for home fixtures
+              Refittr - the circular economy marketplace for home fixtures
             </p>
             <p className="text-sm text-[#475569] mt-0.5">
-              Buy and sell second-hand kitchens, bathrooms, and more — with guaranteed compatibility for your house type.
+              Buy and sell second-hand kitchens, bathrooms, and more - with guaranteed compatibility for your house type.
             </p>
           </div>
           <a

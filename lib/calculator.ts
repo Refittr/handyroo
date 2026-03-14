@@ -189,6 +189,75 @@ export function calculateMaterials(
     quantities.sugar_soap = 1;
     quantities.filler = 1;
     quantities.sandpaper = 1;
+
+  } else if (template.job_id === "vinyl_flooring") {
+    const waste_percent = defaults.waste_percent ?? 10;
+    const pack_coverage_sqm = defaults.pack_coverage_sqm ?? 2.2;
+    const roll_width_m = defaults.roll_width_m ?? 4.0;
+    const beading_length_m = defaults.beading_length_m ?? 2.4;
+
+    const vinyl_type = (answers.vinyl_type as string) ?? "click vinyl";
+    const underlay_needed = answers.underlay_needed === true;
+    const beading_needed = answers.beading_needed !== false;
+    const subfloor_concrete = answers.subfloor_type === "concrete";
+    const subfloor_needs_work = answers.subfloor_condition === "needs work";
+
+    const floor_area_sqm = (room.length_cm * room.width_cm) / 10000;
+    const doorway_count = doorways.length > 0 ? doorways.length : (room.door_count ?? 1);
+
+    calcs.floor_area_sqm = Math.round(floor_area_sqm * 100) / 100;
+    calcs.doorway_count = doorway_count;
+
+    if (vinyl_type === "click vinyl") {
+      const floor_area_with_waste = floor_area_sqm * (1 + waste_percent / 100);
+      const perimeter_m = ((room.length_cm + room.width_cm) * 2) / 100;
+      const beading_total_m = beading_needed ? Math.max(0, perimeter_m - doorway_count * 0.8) : 0;
+
+      calcs.floor_area_with_waste = Math.round(floor_area_with_waste * 100) / 100;
+      calcs.waste_percent = waste_percent;
+      calcs.perimeter_m = Math.round(perimeter_m * 100) / 100;
+      calcs.beading_total_m = Math.round(beading_total_m * 100) / 100;
+
+      quantities.vinyl_packs = Math.ceil(floor_area_with_waste / pack_coverage_sqm);
+      quantities.underlay_rolls = underlay_needed ? Math.ceil(floor_area_with_waste / 15) : 0;
+      quantities.dpm_rolls = subfloor_concrete ? 1 : 0;
+      quantities.beading_lengths = beading_needed ? Math.ceil(beading_total_m / beading_length_m) : 0;
+      quantities.spacers = 1;
+      quantities.ply_sheets = (subfloor_needs_work && !subfloor_concrete) ? Math.ceil(floor_area_sqm / 2.88) : 0;
+      quantities.levelling_bags = (subfloor_needs_work && subfloor_concrete) ? Math.ceil(floor_area_sqm / 5) : 0;
+
+    } else {
+      // sheet vinyl
+      const room_length_m = room.length_cm / 100;
+      const room_width_m = room.width_cm / 100;
+
+      const option_a = roll_width_m >= room_width_m
+        ? room_length_m + 0.2
+        : (room_length_m + 0.2) * 2;
+      const option_b = roll_width_m >= room_length_m
+        ? room_width_m + 0.2
+        : (room_width_m + 0.2) * 2;
+      const vinyl_roll_length = Math.ceil(Math.min(option_a, option_b) * 10) / 10;
+
+      calcs.vinyl_roll_length = vinyl_roll_length;
+      calcs.roll_width_m = roll_width_m;
+
+      quantities.vinyl_roll_length = vinyl_roll_length;
+      quantities.adhesive_litres = Math.ceil(floor_area_sqm / 5);
+      quantities.vinyl_tape = 1;
+      quantities.dpm_rolls = subfloor_concrete ? 1 : 0;
+      quantities.ply_sheets = (subfloor_needs_work && !subfloor_concrete) ? Math.ceil(floor_area_sqm / 2.88) : 0;
+      quantities.levelling_bags = (subfloor_needs_work && subfloor_concrete) ? Math.ceil(floor_area_sqm / 5) : 0;
+    }
+
+    // Door bars grouped by type
+    const vinylBarCounts: Record<string, number> = {};
+    doorways.forEach((d) => {
+      vinylBarCounts[d.bar_type] = (vinylBarCounts[d.bar_type] ?? 0) + 1;
+    });
+    for (const [bar_type, count] of Object.entries(vinylBarCounts)) {
+      door_bars.push({ bar_type, count, label: `${count}× ${bar_type}` });
+    }
   }
 
   // ── Build materials list from template, filtered by conditions ─────────────
@@ -198,6 +267,10 @@ export function calculateMaterials(
     if (condition === "beading_needed") return answers.beading_needed !== false;
     if (condition === "subfloor_concrete") return answers.subfloor_type === "concrete";
     if (condition === "feature_wall") return (quantities.tins_colour_b ?? 0) > 0;
+    if (condition === "vinyl_type_click") return answers.vinyl_type === "click vinyl";
+    if (condition === "vinyl_type_sheet") return answers.vinyl_type === "sheet vinyl";
+    if (condition === "subfloor_needs_work_wooden") return answers.subfloor_condition === "needs work" && answers.subfloor_type === "wooden";
+    if (condition === "subfloor_needs_work_concrete") return answers.subfloor_condition === "needs work" && answers.subfloor_type === "concrete";
     return true;
   };
 

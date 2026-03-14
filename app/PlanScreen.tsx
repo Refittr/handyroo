@@ -25,14 +25,23 @@ function fmt(cm: number) { return (cm / 100).toFixed(2); }
 
 function quantityAnnotation(quantityKey: string, defaults: Record<string, number>): string | null {
   switch (quantityKey) {
-    case "laminate_packs": return `${defaults.pack_coverage_sqm} sqm/pack`;
-    case "underlay_rolls": return `${defaults.underlay_roll_sqm} sqm/roll`;
-    case "dpm_rolls":      return `${defaults.underlay_roll_sqm} sqm/roll`;
-    case "beading_lengths": return `${defaults.beading_length_m}m`;
-    case "tins_colour_a":  return `${defaults.tin_size_litres}L`;
-    case "tins_colour_b":  return `${defaults.tin_size_litres}L`;
+    case "laminate_packs":   return `${defaults.pack_coverage_sqm} sqm/pack`;
+    case "vinyl_packs":      return `${defaults.pack_coverage_sqm} sqm/pack`;
+    case "vinyl_roll_length": return `${defaults.roll_width_m ?? 4}m wide roll`;
+    case "underlay_rolls":   return `${defaults.underlay_roll_sqm} sqm/roll`;
+    case "dpm_rolls":        return `${defaults.underlay_roll_sqm} sqm/roll`;
+    case "beading_lengths":  return `${defaults.beading_length_m}m`;
+    case "tins_colour_a":    return `${defaults.tin_size_litres}L`;
+    case "tins_colour_b":    return `${defaults.tin_size_litres}L`;
     default: return null;
   }
+}
+
+function defaultConditionMet(condition: string | undefined, answers: Record<string, unknown>): boolean {
+  if (!condition) return true;
+  if (condition === "vinyl_type_click") return answers.vinyl_type === "click vinyl";
+  if (condition === "vinyl_type_sheet") return answers.vinyl_type === "sheet vinyl";
+  return true;
 }
 
 function PillGroup<T extends string | number | boolean>({
@@ -232,6 +241,9 @@ export default function PlanScreen({
 
   const isLaminate = job.job_id === "laminate_flooring";
   const isPaint = job.job_id === "paint_walls";
+  const isVinyl = job.job_id === "vinyl_flooring";
+  const isVinylClick = isVinyl && answers.vinyl_type === "click vinyl";
+  const isVinylSheet = isVinyl && answers.vinyl_type === "sheet vinyl";
   const hasDoorwayQ = !!(job.doorway_questions as { enabled?: boolean })?.enabled;
   const doorwayOptions = (job.doorway_questions as { options?: Array<{ label: string; bar_type: string }> })?.options ?? [];
 
@@ -432,7 +444,7 @@ export default function PlanScreen({
         </button>
         {showDefaults && (
           <div className="px-4 pb-4 space-y-4">
-            {job.configurable_defaults.map((cd) => (
+            {job.configurable_defaults.filter((cd) => defaultConditionMet(cd.condition, answers)).map((cd) => (
               <div key={cd.id}>
                 <p className="text-xs font-medium text-[#475569] mb-1.5">
                   {cd.label} <span className="text-[#64748B] font-normal">({cd.unit})</span>
@@ -467,7 +479,7 @@ export default function PlanScreen({
 
       {/* ── Room summary ─────────────────────────────────────────────────────── */}
       <div className="bg-[#F1F5F9] rounded-lg p-4 space-y-1.5 text-sm">
-        {isLaminate && (
+        {(isLaminate || isVinylClick) && (
           <>
             <p className="text-[#0F172A]">
               Floor area: <span className="font-semibold">{calcs.floor_area_sqm} sqm</span>
@@ -476,6 +488,16 @@ export default function PlanScreen({
             </p>
             <p className="text-[#64748B] text-xs">
               Perimeter: {calcs.perimeter_m}m &middot; {calcs.doorway_count} doorway{calcs.doorway_count !== 1 ? "s" : ""} &middot; Beading run: {calcs.beading_total_m}m
+            </p>
+          </>
+        )}
+        {isVinylSheet && (
+          <>
+            <p className="text-[#0F172A]">
+              Floor area: <span className="font-semibold">{calcs.floor_area_sqm} sqm</span>
+            </p>
+            <p className="text-[#64748B] text-xs">
+              Roll width {calcs.roll_width_m}m &rarr; <span className="font-semibold text-[#0F172A]">{calcs.vinyl_roll_length} linear metres</span> needed
             </p>
           </>
         )}

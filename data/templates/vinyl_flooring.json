@@ -1,0 +1,169 @@
+{
+  "job_id": "vinyl_flooring",
+  "job_name": "Lay Vinyl Flooring",
+  "category": "flooring",
+  "difficulty": "beginner",
+  "estimated_time": "3-5 hours for an average bedroom",
+  "icon": "Layers",
+  "applicable_room_types": ["living", "kitchen/dining", "bedroom", "bathroom", "utility", "study", "hallway", "dressing"],
+
+  "clarifying_questions": [
+    {
+      "id": "vinyl_type",
+      "question": "What type of vinyl? Click vinyl (LVT/LVP) lays like laminate with click joints. Sheet vinyl is one big piece cut to fit.",
+      "type": "choice",
+      "options": ["click vinyl", "sheet vinyl"],
+      "default": "click vinyl"
+    },
+    {
+      "id": "underlay_needed",
+      "question": "Do you need underlay? Most click vinyl has it built into the backing - check your product before buying separate underlay. Sheet vinyl never uses underlay.",
+      "type": "yes_no",
+      "default": false
+    },
+    {
+      "id": "beading_needed",
+      "question": "Do you want beading (scotia) around the edges? Covers the expansion gap for click vinyl. Not usually needed for sheet vinyl.",
+      "type": "yes_no",
+      "default": true
+    },
+    {
+      "id": "remove_existing",
+      "question": "Are you removing existing flooring first? Vinyl can often go over existing smooth hard floors.",
+      "type": "yes_no",
+      "default": false
+    },
+    {
+      "id": "subfloor_type",
+      "question": "What's your subfloor? Concrete (ground floor usually) or wooden floorboards (upstairs usually).",
+      "type": "choice",
+      "options": ["concrete", "wooden"],
+      "default": "wooden"
+    },
+    {
+      "id": "subfloor_condition",
+      "question": "Is the subfloor smooth and level? Vinyl shows every imperfection - bumps, screws, gaps between floorboards will show through.",
+      "type": "choice",
+      "options": ["smooth and level", "needs work"],
+      "default": "smooth and level"
+    }
+  ],
+
+  "doorway_questions": {
+    "enabled": true,
+    "per_doorway_question": "What flooring is on the other side?",
+    "options": [
+      { "label": "Carpet", "bar_type": "Reducer bar" },
+      { "label": "Laminate or vinyl (same height)", "bar_type": "T-bar" },
+      { "label": "Tile or stone", "bar_type": "Reducer or T-bar" },
+      { "label": "Nothing / external door / step", "bar_type": "End profile" },
+      { "label": "Landing / stairs", "bar_type": "End profile / stair nosing" }
+    ]
+  },
+
+  "configurable_defaults": [
+    {
+      "id": "pack_coverage_sqm",
+      "label": "Pack coverage (click vinyl)",
+      "unit": "sqm per pack",
+      "default": 2.2,
+      "options": [1.5, 2.0, 2.2, 2.5, 3.0],
+      "condition": "vinyl_type_click"
+    },
+    {
+      "id": "roll_width_m",
+      "label": "Roll width (sheet vinyl)",
+      "unit": "metres",
+      "default": 4.0,
+      "options": [2.0, 3.0, 4.0],
+      "condition": "vinyl_type_sheet"
+    },
+    {
+      "id": "waste_percent",
+      "label": "Waste allowance",
+      "unit": "%",
+      "default": 10,
+      "options": [10, 15]
+    },
+    {
+      "id": "beading_length_m",
+      "label": "Beading length per piece",
+      "unit": "metres",
+      "default": 2.4,
+      "options": [2.4, 3.0]
+    }
+  ],
+
+  "materials": [
+    { "name": "Click vinyl (LVT/LVP)", "quantity_key": "vinyl_packs", "unit": "packs", "condition": "vinyl_type_click", "notes": "Check sqm per pack on the box - adjust the pack coverage setting if different" },
+    { "name": "Sheet vinyl", "quantity_key": "vinyl_roll_length", "unit": "linear metres", "condition": "vinyl_type_sheet", "notes": "Sold by the linear metre off a roll. Tell the shop your room width - they'll cut from the right roll" },
+    { "name": "Vinyl adhesive", "quantity_key": "adhesive_litres", "unit": "litres", "condition": "vinyl_type_sheet", "notes": "Not always needed - some sheet vinyl is loose-laid. Check your product" },
+    { "name": "Double-sided vinyl tape", "quantity_key": "vinyl_tape", "unit": "roll", "condition": "vinyl_type_sheet", "notes": "For joins (if room is wider than roll) and securing edges" },
+    { "name": "Underlay", "quantity_key": "underlay_rolls", "unit": "rolls", "condition": "underlay_needed", "notes": "Most click vinyl has built-in backing - check before buying separate underlay" },
+    { "name": "DPM (damp proof membrane)", "quantity_key": "dpm_rolls", "unit": "roll", "condition": "subfloor_concrete", "notes": "Some vinyl and underlays have built-in DPM - check first" },
+    { "name": "Beading / Scotia", "quantity_key": "beading_lengths", "unit": "lengths (2.4m)", "condition": "beading_needed", "notes": "Match colour to your vinyl" },
+    { "name": "Spacers", "quantity_key": "spacers", "unit": "pack", "condition": "vinyl_type_click", "notes": "Expansion gap spacers - same as laminate" },
+    { "name": "Plywood overlay sheets (6mm)", "quantity_key": "ply_sheets", "unit": "sheets (1220x2440mm)", "condition": "subfloor_needs_work_wooden", "notes": "To smooth uneven floorboards. Fix with screws every 150mm. Essential - vinyl shows every bump" },
+    { "name": "Self-levelling compound", "quantity_key": "levelling_bags", "unit": "bags (25kg)", "condition": "subfloor_needs_work_concrete", "notes": "Coverage ~5 sqm per bag at 3mm depth. May need more if subfloor is very uneven" }
+  ],
+
+  "tools": {
+    "essential": [
+      { "name": "Tape measure", "reason": "Measuring cuts" },
+      { "name": "Stanley knife with fresh blades", "reason": "Scoring click vinyl to snap, or cutting sheet vinyl - go through a lot of blades" },
+      { "name": "Straight edge / metal ruler", "reason": "Guiding straight cuts" },
+      { "name": "Rubber mallet or tapping block", "reason": "Closing click joints (click vinyl only)" },
+      { "name": "Pull bar", "reason": "Last row against the wall (click vinyl only)" },
+      { "name": "Knee pads", "reason": "Hours on your knees" }
+    ],
+    "helpful": [
+      { "name": "Heat gun", "reason": "Softening vinyl for tight curves and around obstacles" },
+      { "name": "Vinyl scriber or compass", "reason": "Scribing wall profiles for a tight fit (sheet vinyl)" },
+      { "name": "Notched trowel", "reason": "Spreading adhesive evenly (sheet vinyl with adhesive)" },
+      { "name": "Roller or broom", "reason": "Pressing vinyl into adhesive and removing air bubbles" },
+      { "name": "Mitre saw or mitre box", "reason": "Clean beading cuts" },
+      { "name": "Spirit level", "reason": "Checking subfloor" },
+      { "name": "Jigsaw", "reason": "Complex cuts around pipes" }
+    ]
+  },
+
+  "steps": [
+    "Clear the room completely. Remove existing flooring if needed - vinyl can go over existing smooth hard floors but not over carpet.",
+    "Check the subfloor carefully. Vinyl is less forgiving than laminate - bumps, screw heads, and gaps between floorboards will show through. Fix loose boards, countersink any raised screws.",
+    "If subfloor needs work: lay 6mm plywood sheets over wooden floors (screw down every 150mm, stagger joints) or use self-levelling compound on concrete. Let compound dry fully before laying vinyl.",
+    "Acclimatise - leave packs/roll in the room for 24-48 hours. Check product instructions.",
+    "Lay DPM if on concrete (same as laminate - overlap 200mm, tape joints). Skip if your vinyl or underlay has built-in DPM.",
+    "For CLICK VINYL: lay underlay only if your vinyl doesn't have built-in backing. Most LVT/LVP doesn't need separate underlay.",
+    "For CLICK VINYL: lay exactly like laminate - spacers against walls, first row tongue to wall, click and lock, stagger joints 300mm minimum. Click vinyl scores with a knife and snaps - faster than sawing laminate.",
+    "For SHEET VINYL: make a paper template of the room first (newspaper/lining paper taped together, cut to room shape). Unroll vinyl in a bigger room, lay template on top, cut 50mm oversize all round.",
+    "For SHEET VINYL: position in the room. Scribe wall profiles with a compass/scriber. Trim with a sharp knife along the scribed line - take your time, you can't add vinyl back.",
+    "For SHEET VINYL: stick down if required - fold half back, apply adhesive with notched trowel, lay vinyl back down, press with roller from centre to edges. Repeat other half. Some vinyl is loose-laid with just tape at edges.",
+    "Cut around pipes: measure carefully, cut a slit from nearest edge, cut a hole slightly larger than pipe. Pipe collars hide the gap.",
+    "Fit door bars at all thresholds.",
+    "For CLICK VINYL: remove spacers, fit beading to skirting board (not the floor).",
+    "For SHEET VINYL: refit skirting boards over the vinyl edge."
+  ],
+
+  "pro_tips": [
+    "Click vinyl is more forgiving than laminate. Thinner, more flexible, easier to cut. Great first flooring project.",
+    "Sheet vinyl in one piece = no joins. If your room width fits within the roll width (2m, 3m, or 4m), pay for the wider roll to avoid a join.",
+    "Score and snap click vinyl with a knife - much faster and less dusty than sawing.",
+    "Subfloor prep matters more with vinyl than laminate. Laminate is rigid and bridges imperfections. Vinyl is flexible and shows everything underneath.",
+    "Don't rush scribing with sheet vinyl. The edge fit is everything - a well-scribed edge disappears under the skirting.",
+    "Vinyl is waterproof - better than laminate for bathrooms and kitchens. Click vinyl with sealed joints works well in wet areas.",
+    "Vinyl works well over underfloor heating - often better than laminate. Check the maximum temperature rating.",
+    "Most click vinyl does NOT need underlay. Buying it when the vinyl has built-in backing wastes money and can void the warranty."
+  ],
+
+  "caveats": [
+    "Check the sqm per pack on your click vinyl. Pack sizes vary - adjust the pack coverage setting to match.",
+    "Most click vinyl does NOT need separate underlay. It has built-in backing. Check your product instructions before buying underlay.",
+    "Sheet vinyl roll widths matter. If your room is 3.2m wide and you buy from a 3m roll, you'll have a join. Buy from a 4m roll for seamless.",
+    "Subfloor prep can be a significant extra cost. Plywood overlay or self-levelling compound adds materials and time.",
+    "L-shaped rooms need more waste (15% not 10%) for click vinyl.",
+    "Sheet vinyl adhesive varies. Some is loose-laid (no adhesive), some uses spray adhesive, some uses trowel-on. Check your product.",
+    "Heavy furniture dents vinyl permanently. Use furniture cups/pads under heavy items."
+  ],
+
+  "refittr_message": "Coming in June - check Refittr for second-hand flooring guaranteed to fit your room."
+}
